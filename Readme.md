@@ -11,7 +11,7 @@ Título e imagen de portada;
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-[![Release date: August](https://img.shields.io/badge/License-ODC_BY-brightgreen.svg)](https://opendatacommons.org/licenses/by/)
+[![Release date: August](https://img.shields.io/badge/Release date: -brightgreen.svg)](https://opendatacommons.org/licenses/by/)
 
 
 Insignias;
