@@ -22,8 +22,11 @@ Título e imagen de portada;
 <h2>Insignias</h2>
 <br>
 [![License: CC0-1.0](https://licensebuttons.net/l/zero/1.0/80x15.png)](http://creativecommons.org/publicdomain/zero/1.0/)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 [![Release date: August](https://img.shields.io/badge/Release date: -brightgreen.svg)](https://opendatacommons.org/licenses/by/)
+
 <img src="https://img.shields.io/badge/STATUS-EN%20DESAROLLO-green">
 <br>
 <h2>Descripción del proyecto</h2>
