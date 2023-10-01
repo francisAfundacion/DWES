@@ -74,18 +74,22 @@ Descargando  determinado archivo, abriendo ...
   </tr>
 </tABLE>
 
-![FOTILLO](https://github.com/francisAfundacion/DWES/assets/145001170/8aa95b9c-36bd-4180-82bf-ea6c5c9f2204)
+![FOTILLO](https://github.com/francisAfundacion/DWES/assets/145001170/ddb355b5-c731-4203-aa5f-b65df01b0fd0)
+
 
 <br>
 <h2>Personas Desarroladoras del Proyecto:</h2>
 
-![FOTILLO](https://github.com/francisAfundacion/DWES/assets/145001170/ddb355b5-c731-4203-aa5f-b65df01b0fd0)
+
 
 <ol>
   <li>Francisco Gómez Segura</li>
   <li>Alejandro Regueiro</li>
   <li>Diana Sevchenko</li>
 </ol>
+
+![FOTILLO](https://github.com/francisAfundacion/DWES/assets/145001170/8aa95b9c-36bd-4180-82bf-ea6c5c9f2204)
+
 <br>
 <h2>Licencia</h2>
 Tenemos la licencia MIT lisense.
