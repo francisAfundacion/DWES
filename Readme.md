@@ -34,11 +34,11 @@ Título e imagen de portada;
   Aquí se supone que hablaríamos en que consistiría nuestro proyecto...
 </div>
 <h2>Estado del proyecto</h3>
-<hr><br>
+<br>
 En proceso
 <br>
 <h2>Demostración de funciones y aplicaciones</h2>
-<hr><br>
+<br>
 Aquí se supone que hablaríamos del funcionamiento de lo que debería hacer nuestro proyecto...
 <h4>Funcionalidades</h4>
 <ol>
@@ -67,12 +67,8 @@ Descargando  determinado archivo, abriendo ...
 
 ![gotillo2](https://github.com/francisAfundacion/DWES/assets/145001170/10d65c5e-bb6e-4423-99a5-9244b6be9efd)
 
-
-
 <br>
 <h2>Personas Desarroladoras del Proyecto:</h2>
-
-
 
 <ol>
   <li>Francisco Gómez Segura</li>
@@ -84,7 +80,7 @@ Descargando  determinado archivo, abriendo ...
 
 <br>
 <h2>Licencia</h2>
-Tenemos la licencia MIT lisense.
+licencia MIT lisense.
 
 
 
