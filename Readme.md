@@ -63,18 +63,10 @@ Descargando  determinado archivo, abriendo ...
 </table>
 <br>
 <h2>Personas Constribuyentes</h2>
-<tABLE>
-  <tr>
-    <td>
-      
-    </td>
-    <td>
      Se agradece a Melisa Pazos, Rubén Varela , Carlos Arguiñano, Iria López, Antonio Castro por su contribución económica en el proyecto
-    </td>
-  </tr>
-</tABLE>
 
-![FOTILLO](https://github.com/francisAfundacion/DWES/assets/145001170/ddb355b5-c731-4203-aa5f-b65df01b0fd0)
+![gotillo2](https://github.com/francisAfundacion/DWES/assets/145001170/10d65c5e-bb6e-4423-99a5-9244b6be9efd)
+
 
 
 <br>
