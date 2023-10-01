@@ -1,11 +1,10 @@
 
 Título e imagen de portada;
 
-<h1>ReadMe</h1>
-<h2 color:red>
-  índice
+<h1>README</h1>
+<h2>
+  ÍNDICE
 </h2>
-  <hr><hr>
   <ol>
     <li>Insignias</li>
     <li>Descripción del proyecto</li>
@@ -69,13 +68,13 @@ Descargando  determinado archivo, abriendo ...
 
 <br>
 <h2>Personas Desarroladoras del Proyecto:</h2>
-
+<br>
 <ol>
   <li>Francisco Gómez Segura</li>
   <li>Alejandro Regueiro</li>
   <li>Diana Sevchenko</li>
 </ol>
-
+<br>
 ![FOTILLO](https://github.com/francisAfundacion/DWES/assets/145001170/8aa95b9c-36bd-4180-82bf-ea6c5c9f2204)
 
 <br>
