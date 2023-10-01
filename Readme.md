@@ -73,8 +73,9 @@ Descargando  determinado archivo, abriendo ...
     </td>
   </tr>
 </tABLE>
+
 ![FOTILLO](https://github.com/francisAfundacion/DWES/assets/145001170/8aa95b9c-36bd-4180-82bf-ea6c5c9f2204)
-Personas Desarrolladoras del Proyecto;
+
 <br>
 <h2>Personas Desarroladoras del Proyecto:</h2>
 
