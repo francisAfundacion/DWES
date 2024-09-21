@@ -1,3 +1,4 @@
+
 <p>
   <img src="https://github.com/user-attachments/assets/7020ffe0-389c-4fe2-ad3b-b3438d8705d9">
 </p>
@@ -40,25 +41,45 @@ hemos decicido implementar un modo competitivo,el cuál consistirá en aumentar 
   </p>
 
 Tecnologías utilizadas
-<ul>
+<ol>
   <li>Apache2</li>
   <li>requirejs</li>
   <li>css</li>
   <li>html5</li>
   <li>javascript</li>
   <li>node.js</li>
-</ul>
+</ol>
 
 
 Acceso al Proyecto;
-
 Personas Contribuyentes
 
 
 
 Personas desarolladoras del proyecto
+<div align="center">
+  <img  width="180px" height="150px" src="https://github.com/user-attachments/assets/da345fdd-ccb5-4193-8a84-093b8d3ca3e1">
+  <img width="180px" height="150px" src="https://github.com/user-attachments/assets/046118a9-729b-43a8-bd7c-3afba3c4b66c">
+  <img  width="180px" height="150px" src="https://github.com/user-attachments/assets/58887f3d-2615-4303-b8d4-15b325c04ba9">
+  <img    width="200px" height="150px" src="https://github.com/user-attachments/assets/58887f3d-2615-4303-b8d4-15b325c04ba9">
+  <img src="https://github.com/user-attachments/assets/da345fdd-ccb5-4193-8a84-093b8d3ca3e1">
+  <img src="https://github.com/user-attachments/assets/da345fdd-ccb5-4193-8a84-093b8d3ca3e1">
+  <img src="https://github.com/user-attachments/assets/da345fdd-ccb5-4193-8a84-093b8d3ca3e1">
+  <img src="https://github.com/user-attachments/assets/da345fdd-ccb5-4193-8a84-093b8d3ca3e1">
+  
+  ![formal3](https://github.com/user-attachments/assets/177d09ae-c773-4833-b830-3cd9fa5db213)
 
+</div>
+![colab5](https://github.com/user-attachments/assets/da345fdd-ccb5-4193-8a84-093b8d3ca3e1)
+![colab4](https://github.com/user-attachments/assets/046118a9-729b-43a8-bd7c-3afba3c4b66c)
+![colab2](https://github.com/user-attachments/assets/cc619e2e-491f-4af5-9569-33d3f67bcb03)
+![colab1](https://github.com/user-attachments/assets/aee902f8-2052-46ae-a029-4226cd43b4e7)
+![colab8](https://github.com/user-attachments/assets/42b19462-7df4-4528-85e5-245996919583)
+![colab7](https://github.com/user-attachments/assets/58887f3d-2615-4303-b8d4-15b325c04ba9)
 
+<div>
+  
+</div>
 
 Licencia.
 
