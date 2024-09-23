@@ -56,7 +56,7 @@ Acceso al Proyecto;
           <img  width="250" height ="200"src="https://github.com/user-attachments/assets/cc619e2e-491f-4af5-9569-33d3f67bcb03">
           <img  width="200px" height="200px" src="https://github.com/user-attachments/assets/58887f3d-2615-4303-b8d4-15b325c04ba9">
   <li>Personas Contribuyentes</li> <br> <br>
-       <img  width="200" height ="200"src="https://github.com/user-attachments/assets/0ca92f8c-b2d9-4a80-915b-28ce6c218a31">
+       <img  width="200" height ="200"src="https://github.com/user-attachments/assets/e6e2d6df-3e92-450f-b34e-76315ed6ea29">
        <img  width="250" height ="200"src=https://github.com/user-attachments/assets/41d8ac3d-59ac-41d1-b2d0-eafa1d8eca22>
        <img  width="200" height ="200"src="https://github.com/user-attachments/assets/657d8dce-57cd-446e-a924-41c1359d813b">
 
