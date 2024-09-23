@@ -1,7 +1,5 @@
 
-<p>
-  <img src="https://github.com/user-attachments/assets/7020ffe0-389c-4fe2-ad3b-b3438d8705d9">
-</p>
+<h1>CHESSS</h1>
 <p align="center">
   <img src="https://github.com/user-attachments/assets/20e13f32-e8a5-48f6-8ef4-b1da87473d8a">
 </p>
@@ -52,11 +50,13 @@ Tecnologías utilizadas
 
 
 Acceso al Proyecto;
-Personas Contribuyentes
+<ul>
+  <li>Personas desarolladoras del proyecto</li>
+          <img  width="200" height ="200"src="https://github.com/user-attachments/assets/177d09ae-c773-4833-b830-3cd9fa5db213">
+          <img  width="200" height ="200"src="">
+  <li>Personas Contribuyentes</li>
+</ul>
 
-
-
-Personas desarolladoras del proyecto
 <div align="center">
   <img  width="180px" height="150px" src="https://github.com/user-attachments/assets/da345fdd-ccb5-4193-8a84-093b8d3ca3e1">
   <img width="180px" height="150px" src="https://github.com/user-attachments/assets/046118a9-729b-43a8-bd7c-3afba3c4b66c">
