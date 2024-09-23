@@ -51,35 +51,20 @@ Tecnologías utilizadas
 
 Acceso al Proyecto;
 <ul>
-  <li>Personas desarolladoras del proyecto</li>
+  <li>Personas desarolladoras del proyecto</li> <br> <br>
           <img  width="200" height ="200"src="https://github.com/user-attachments/assets/177d09ae-c773-4833-b830-3cd9fa5db213">
-          <img  width="200" height ="200"src="">
-  <li>Personas Contribuyentes</li>
+          <img  width="250" height ="200"src="https://github.com/user-attachments/assets/cc619e2e-491f-4af5-9569-33d3f67bcb03">
+          <img  width="200px" height="200px" src="https://github.com/user-attachments/assets/58887f3d-2615-4303-b8d4-15b325c04ba9">
+  <li>Personas Contribuyentes</li> <br> <br>
+       <img  width="200" height ="200"src="https://github.com/user-attachments/assets/0ca92f8c-b2d9-4a80-915b-28ce6c218a31">
+       <img  width="250" height ="200"src=https://github.com/user-attachments/assets/41d8ac3d-59ac-41d1-b2d0-eafa1d8eca22>
+       <img  width="200" height ="200"src="https://github.com/user-attachments/assets/657d8dce-57cd-446e-a924-41c1359d813b">
+
+
+
+
 </ul>
 
-<div align="center">
-  <img  width="180px" height="150px" src="https://github.com/user-attachments/assets/da345fdd-ccb5-4193-8a84-093b8d3ca3e1">
-  <img width="180px" height="150px" src="https://github.com/user-attachments/assets/046118a9-729b-43a8-bd7c-3afba3c4b66c">
-  <img  width="180px" height="150px" src="https://github.com/user-attachments/assets/58887f3d-2615-4303-b8d4-15b325c04ba9">
-  <img    width="200px" height="150px" src="https://github.com/user-attachments/assets/58887f3d-2615-4303-b8d4-15b325c04ba9">
-  <img src="https://github.com/user-attachments/assets/da345fdd-ccb5-4193-8a84-093b8d3ca3e1">
-  <img src="https://github.com/user-attachments/assets/da345fdd-ccb5-4193-8a84-093b8d3ca3e1">
-  <img src="https://github.com/user-attachments/assets/da345fdd-ccb5-4193-8a84-093b8d3ca3e1">
-  <img src="https://github.com/user-attachments/assets/da345fdd-ccb5-4193-8a84-093b8d3ca3e1">
-  
-  ![formal3](https://github.com/user-attachments/assets/177d09ae-c773-4833-b830-3cd9fa5db213)
-
-</div>
-![colab5](https://github.com/user-attachments/assets/da345fdd-ccb5-4193-8a84-093b8d3ca3e1)
-![colab4](https://github.com/user-attachments/assets/046118a9-729b-43a8-bd7c-3afba3c4b66c)
-![colab2](https://github.com/user-attachments/assets/cc619e2e-491f-4af5-9569-33d3f67bcb03)
-![colab1](https://github.com/user-attachments/assets/aee902f8-2052-46ae-a029-4226cd43b4e7)
-![colab8](https://github.com/user-attachments/assets/42b19462-7df4-4528-85e5-245996919583)
-![colab7](https://github.com/user-attachments/assets/58887f3d-2615-4303-b8d4-15b325c04ba9)
-
-<div>
-  
-</div>
 
 Licencia.
 
