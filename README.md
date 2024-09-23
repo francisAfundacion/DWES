@@ -49,7 +49,20 @@ Tecnologías utilizadas
 </ol>
 
 
-Acceso al Proyecto;
+Acceso al Proyecto
+<ol> Instalaciones necesarias para poder desarrollar con Chess en Debian
+  <li>Instalar Git :</li> <br>
+  Previamente antes de proceder directamente con la instlación deberemos de actualizar los repositorios con la intrucción siguiente :<br>
+  sudo apt get update.<br><br>A posteriori ejecutaremos el comando relacionado con la instalación:<br>
+  sudo apt install git.<br><br>A continuación configuraremos el nombre de usuario y correo con la que nos identificaremos en los futuros repositorios que trabajaremos, tal que:
+  git config --global user.name "UsuarioGithub"<br>  git config --global user.name "correoUsuarioGithub"<br><br>
+  Crearemos la clave ssh  del siguiente modo :<br> ssh-keygen -t rsa -b 4096 -C "correoGithub"<br><br>Por último deberemos de copiar el contenido de la clave pública generada y  pegarla en la sección de clave SSH de Github.<br>Para ello con la instrución:<br><br> cat  > < ~/.ssh/id_rsa.pub 
+<br>
+<li>Instalar Apache2</li>
+    Antes de  implicarnos directamente con la instalación, actualizaremos los repositorios con :<br>
+     sudo apt get update.A continuación ejecutaremos el comando que ya nos permitirá trabajar con Apache2:<br>
+     sudo apt get install Apache2.
+</ol>
 <ul>
   <li>Personas desarolladoras del proyecto</li> <br> <br>
           <img  width="200" height ="200"src="https://github.com/user-attachments/assets/177d09ae-c773-4833-b830-3cd9fa5db213">
@@ -64,7 +77,9 @@ Acceso al Proyecto;
 
 
 </ul>
-
-
 Licencia.
+<p align="center">
+    Chess utiliza licencia MIT.
+    La documentación de Chess que se guarda en la carpeta doc presenta la licencia Creative Commons.
+</p>
 
