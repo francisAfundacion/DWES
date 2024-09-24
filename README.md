@@ -16,6 +16,7 @@
 
 [Funcionalidades](#funcionalidades)
 
+[Estado Del Proyecto](#estado-del-proyecto)
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/20e13f32-e8a5-48f6-8ef4-b1da87473d8a">
@@ -35,6 +36,12 @@ El proyecto de desarrollo de Chess 3.0,busca añadir nuevas funcionalidades en l
   <li><img alt="Static Badge" src="https://img.shields.io/badge/Release%20Date-September-orange?style=plastic&labelColor=Grey"></li>
   <li><img alt="Static Badge" src="https://img.shields.io/badge/requirejs-2.3.7-blue?style=plastic"></li>
 </ul>
+
+## Estado Del Proyecto
+  <p align="center">
+    <img alt="Static Badge" src="https://img.shields.io/badge/Status-En%20Desarrolo-yellow">
+  </p>
+
 
 ## Funcionalidades
 
