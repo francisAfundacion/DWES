@@ -35,6 +35,7 @@ El proyecto de desarrollo de Chess 3.0,busca añadir nuevas funcionalidades en l
   <li><img alt="Static Badge" src="https://img.shields.io/badge/Tests-developing-green?style=plastic&labelColor=red"></li>
   <li><img alt="Static Badge" src="https://img.shields.io/badge/Release%20Date-September-orange?style=plastic&labelColor=Grey"></li>
   <li><img alt="Static Badge" src="https://img.shields.io/badge/requirejs-2.3.7-blue?style=plastic"></li>
+   <li><img alt="Static Badge" src="https://img.shields.io/badge/version%20-html5-orange?style=plastic&labelColor=Grey"></li>
 </ul>
 
 ## Estado Del Proyecto
