@@ -1,3 +1,5 @@
+“Este directorio contiene backups de los archivos de
+configuración de los virtual hosts”.
 
 <h1>CHESSS</h1>
 <h2>índice</h2>
