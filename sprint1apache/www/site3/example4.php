@@ -9,7 +9,7 @@ c
 		<?php
 			function mensaje_jubilacion ($edad,$num){
 			$anos_jubila = 0;
-			$mensaje_anos = "";
+			$mensaje_anos = "lo sentimos, pero el valor del númer no es primo!";
 			$mensajeJubi = "";
 			$mensaje = "";
 				if ($edad <65){
@@ -41,7 +41,7 @@ c
 				<th>Info</th>
 			</tr>
 			<?php	
-				$nprimo = 3;
+				$nprimo = $_GET['primo'];
 				$edad = $_GET['edad'];
 				echo "<tr>";
 				echo "<td>".$_GET['edad']."</td>";
