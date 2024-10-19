@@ -9,7 +9,7 @@ c
 		<?php
 			function mensaje_jubilacion ($edad,$num){
 			$anos_jubila = 0;
-			$mensaje_anos = "lo sentimos, pero el valor del númer no es primo!";
+			$mensaje_anos = "lo sentimos, pero el valor del número no es primo!";
 			$mensajeJubi = "";
 			$mensaje = "";
 				if ($edad <65){
