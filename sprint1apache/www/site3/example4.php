@@ -4,7 +4,7 @@ c
                 <title>Sprint 1 , parte 2,ejercicio 2</title>
         </head>
         <body>
-                <h1>Sprint 1,parte 2,ejercicio 2</h1>
+                <h1>Sprint 1,parte 2,ejercicio 4</h1>
                 <h2>Página de Bienvenidas</h2>
 		<?php
 			function mensaje_jubilacion ($edad,$num){
