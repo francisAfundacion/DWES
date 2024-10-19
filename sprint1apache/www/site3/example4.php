@@ -44,7 +44,7 @@ c
 				$nprimo = $_GET['primo'];
 				$edad = $_GET['edad'];
 				echo "<tr>";
-				echo "<td>".$_GET['edad']."</td>";
+				echo "<td>".$edad."</td>";
 				echo "<td>". mensaje_jubilacion ($edad,$nprimo)."</td>";
 				echo "</tr>";
 			?>
