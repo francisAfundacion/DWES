@@ -48,7 +48,7 @@
 	    $resultado ="";
 
             if (!isset($_POST["campo1"]) or !isset($_POST["campo2"]))  {
-		echo !isset($_POST["campo1"]). "  ".!isset($_POST["campo2"]);
+		//echo !isset($_POST["campo1"]). "  ".!isset($_POST["campo2"]);
 		$resultado = "El primer y/o segundo  campo(s) numérico(s) no ha(n) sido introducido(s)";               
             }else {
   	     		 $num1 = $_POST['campo1'];
