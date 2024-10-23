@@ -57,6 +57,7 @@
 					}
 					echo "</tr>";
 				}
+				mysqli_close($db);
 		?>
 
 
