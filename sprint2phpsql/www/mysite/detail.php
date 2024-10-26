@@ -1,8 +1,9 @@
 <?php
-    $db = mysqli_connect('localhost','root','1234','mysitedb')or die('Error al conectarse a la base de datos!');
+    $db = mysqli_connect('localhost','root','1234','mysitedb')or die('¡Error al conectarse a la base de datos!');
 ?>
 <html>
     <head>
+        <title>Ejercicio 3</title>
     </head>
     <body>
         <?php
@@ -26,6 +27,19 @@
             }
             echo "</ul>";
         ?>
+        <h3>Listado comentarios:</h3>
+        <ul>
+        <?php
+            $consulta_comentarios = "SELECT * FROM  tComentarios where libro_id=".$id_libro;
+            $resultado_comentarios = mysqli_query($db,$consulta_comentarios) or die("¡Error a la hora de ejecutar la consulta!");
+            $filas = "";
+                while ($filas = mysqli_fetch_array($resultado_comentarios)){
+                         echo "<li>".$filas['comentario']."</li>";
+                    }
+                
+            
+        ?>
+        </ul>
         <!--
         <p>Deja un nuevo comentario:</p>
         <form action="/comment.php" method="post">
