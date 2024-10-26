@@ -25,14 +25,14 @@ DROP TABLE IF EXISTS `tComentarios`;
 CREATE TABLE `tComentarios` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `comentario` varchar(50) DEFAULT NULL,
-  `usuario_id` int(11) NOT NULL,
-  `libro_id` int(11) NOT NULL,
+  `usuario_id` int(11) DEFAULT NULL,
+  `libro_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `usuario_id` (`usuario_id`),
   KEY `libro_id` (`libro_id`),
   CONSTRAINT `tComentarios_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `tUsuarios` (`id`),
   CONSTRAINT `tComentarios_ibfk_2` FOREIGN KEY (`libro_id`) REFERENCES `tLibros` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,6 +41,12 @@ CREATE TABLE `tComentarios` (
 
 LOCK TABLES `tComentarios` WRITE;
 /*!40000 ALTER TABLE `tComentarios` DISABLE KEYS */;
+INSERT INTO `tComentarios` VALUES
+(1,'Buen libro.',1,1),
+(2,'Muy buen libro.',2,1),
+(3,'Horrible libro.',3,2),
+(4,'No está mal, pero acabando volviéndose denso a la ',2,3),
+(5,'EL mejor libro que he leído en mi vida',4,4);
 /*!40000 ALTER TABLE `tComentarios` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -118,4 +124,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-10-22 13:06:23
+-- Dump completed on 2024-10-26 16:59:46
