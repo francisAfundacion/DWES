@@ -18,7 +18,9 @@
 --
 -- Table structure for table `tComentarios`
 --
-
+DROP DATABASE IF EXISTS mysitedb;
+CREATE DATABASE mysitedb;
+USE mysitedb;
 DROP TABLE IF EXISTS `tComentarios`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -34,19 +36,20 @@ CREATE TABLE `tComentarios` (
   CONSTRAINT `tComentarios_ibfk_2` FOREIGN KEY (`libro_id`) REFERENCES `tLibros` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
+alter table tComentarios add column fecha DATETIME NULL;
 --
 -- Dumping data for table `tComentarios`
 --
 
 LOCK TABLES `tComentarios` WRITE;
+UNLOCK TABLES;
 /*!40000 ALTER TABLE `tComentarios` DISABLE KEYS */;
-INSERT INTO `tComentarios` VALUES
-(1,'Buen libro.',1,1),
-(2,'Muy buen libro.',2,1),
-(3,'Horrible libro.',3,2),
-(4,'No está mal, pero acabando volviéndose denso a la ',2,3),
-(5,'EL mejor libro que he leído en mi vida',4,4);
+INSERT INTO `tComentarios`(comentario,usuario_id,libro_id) VALUES
+('Buen libro.',1,1),
+('Muy buen libro.',2,1),
+('Horrible libro.',3,2),
+('No está mal, pero acabando volviéndose denso a la ',2,3),
+('EL mejor libro que he leído en mi vida',4,4);
 /*!40000 ALTER TABLE `tComentarios` ENABLE KEYS */;
 UNLOCK TABLES;
 
