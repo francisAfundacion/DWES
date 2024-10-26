@@ -36,8 +36,7 @@
                 while ($filas = mysqli_fetch_array($resultado_comentarios)){
                          echo "<li>".$filas['comentario']."</li>";
                     }
-                
-            
+            mysqli_close($db);
         ?>
         </ul>
     </body>
