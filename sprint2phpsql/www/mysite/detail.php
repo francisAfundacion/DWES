@@ -6,25 +6,36 @@
         <title>Ejercicio 3</title>
         <style>
             body{
-                font-style: "sans serif,Arial";
+                font-family: 'Times New Roman', Times, serif;
                 font-size:16px;
+                color:brown;
+                background-color:hsl(68, 76%, 90%);
             }
             img {
                 width:200px;
                 height:200px;
             }
-            ul > li {
+            ul > li .comentarios {
                 margin:10px;
                 list-style:square;
-                font-style:
             }
-            input[type='submit']{
+            ul > li:not(.comentarios) {
+                list-style:square;
+            }
+            input[type='submit'],textarea{
                 margin-top:10px;
-                border-radius:10px;
+                border-radius:5px;
+                background-color: rgb(247, 233, 213);
+                color:brown;
+            }
+
+            
+            input[type='submit']{
                 margin-left:18%;
             }
-            h3{
-                font-style:"newRocker";
+
+            input[type='submit'],p{
+                font-weight:bold;
             }
         </style>
     </head>
@@ -57,7 +68,7 @@
             $resultado_comentarios = mysqli_query($db,$consulta_comentarios) or die("¡Error a la hora de ejecutar la consulta!");
             $filas = "";
                 while ($filas = mysqli_fetch_array($resultado_comentarios)){
-                         echo "<li>".$filas['comentario']."    :    <span>".$filas['fecha']."</span></li>";
+                         echo "<li class='comentarios'>".$filas['comentario']."    :    <span>".$filas['fecha']."</span></li>";
                     }
             mysqli_close($db);
         ?>
