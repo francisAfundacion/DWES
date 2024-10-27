@@ -9,7 +9,7 @@
                 font-family: 'Times New Roman', Times, serif;
                 font-size:16px;
                 color:brown;
-                background-color:hsl(68, 76%, 90%);
+                background-color:hwb(69 87% 5%);
             }
             img {
                 width:200px;
