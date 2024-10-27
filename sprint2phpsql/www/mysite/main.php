@@ -1,24 +1,39 @@
 <html>
 	<head>
 			<style>
+					body{
+						font-style: "sans serif,Arial";
+						font-size:16px;
+						text-align:center;
+						color:brown;
+						text-shadow:1px 1px 1px black;
+					}
 					table {
 						width:500px;
 						height:200px;
+						margin:auto;
 					}
 					table,td,th{
 						border: 2px solid black;
 						border-collapse:collapse;
-					}
-					td{
-						width:50px;
-						height:5px;
+						border-radius:5px;
 					}
 					td,th{
 						border-collapse:collapse;
 						padding:5px 20px ;	
-						height:20px;
-						text-align:center;
 					}
+					img {
+						width:200px;
+						height:200px;
+					}
+					th{
+						background-color:#f5bdcd;
+					}
+					td{
+						background-color:hsl(68, 76%, 90%);
+						color: hsl(330, 80%, 27%);
+					}
+					
 			</style>
 	</head>
 	<?php
