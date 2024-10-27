@@ -7,11 +7,13 @@
 						text-align:center;
 						color:brown;
 						text-shadow:1px 1px 1px black;
+						background-color:hwb(69 87% 5%);
 					}
 					table {
 						width:500px;
 						height:200px;
 						margin:auto;
+						background-color:#f7e6e6;
 					}
 					table,td,th{
 						border: 2px solid black;
@@ -30,7 +32,6 @@
 						background-color:#f5bdcd;
 					}
 					td{
-						background-color:hsl(68, 76%, 90%);
 						color: hsl(330, 80%, 27%);
 					}
 					
