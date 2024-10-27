@@ -4,6 +4,29 @@
 <html>
     <head>
         <title>Ejercicio 3</title>
+        <style>
+            body{
+                font-style: "sans serif,Arial";
+                font-size:16px;
+            }
+            img {
+                width:200px;
+                height:200px;
+            }
+            ul > li {
+                margin:10px;
+                list-style:square;
+                font-style:
+            }
+            input[type='submit']{
+                margin-top:10px;
+                border-radius:10px;
+                margin-left:18%;
+            }
+            h3{
+                font-style:"newRocker";
+            }
+        </style>
     </head>
     <body>
         <?php
@@ -34,7 +57,7 @@
             $resultado_comentarios = mysqli_query($db,$consulta_comentarios) or die("¡Error a la hora de ejecutar la consulta!");
             $filas = "";
                 while ($filas = mysqli_fetch_array($resultado_comentarios)){
-                         echo "<li>".$filas['comentario']."</li>";
+                         echo "<li>".$filas['comentario']."    :    <span>".$filas['fecha']."</span></li>";
                     }
             mysqli_close($db);
         ?>
@@ -42,7 +65,7 @@
         <p>Deja un nuevo comentario:</p>
         <form action="/comment.php" method="post">
             <textarea rows="4" cols="50" name="new_comment"></textarea><br>
-            <input type="hidden" name="id" value=<?php echo $id?>>
+            <input type="hidden" name="id" value=<?php echo $id_libro?>>
             <input type="submit" value="Comentar">
         </form>
     </body>
