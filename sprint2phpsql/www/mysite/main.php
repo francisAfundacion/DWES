@@ -64,12 +64,16 @@
 					for ($columna = 0; $columna < 5 ; $columna ++){
 						//echo "ENTRO EN EL BUCLE MOVERME POR LAS COLUMNAS <br>";
 						//echo "valor columna =>". $fila[$columna].;
-						if ($columna == 2){
-							echo "<td><img src=".$fila[$columna]."></td>";
-						}
-						else {
-							echo "<td>".$fila[$columna]."</td>";
-						}
+						if ($columna == 0){
+							echo "<td><a href='http://localhost:8083/detail.php?id=".$fila[$columna]."'>".$fila[$columna]."</a></td>";
+						}else{
+							if ($columna == 2){
+								echo "<td><img src=".$fila[$columna]."></td>";
+							}
+							else{
+								echo "<td>".$fila[$columna]."</td>";
+							}
+						}	
 					}
 					echo "</tr>";
 				}
