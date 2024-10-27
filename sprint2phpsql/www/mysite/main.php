@@ -34,7 +34,15 @@
 					td{
 						color: hsl(330, 80%, 27%);
 					}
-					
+					a:link{
+						color:hsl(330, 80%, 27%);
+					}
+					a:visited{
+						color:brown;
+					}
+					a:active {
+						color:rgb(89, 72, 117);
+					}
 			</style>
 	</head>
 	<?php
