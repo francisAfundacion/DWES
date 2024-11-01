@@ -26,7 +26,7 @@ push.
                 session_start();
                 $_SESSION['id_usuario'] = $fila['id'];
                 echo $_SESSION['id_usuario'];
-                //header('location:main.php');
+                header('location:main.php');
             }
         }
         return $mensajetxt;
