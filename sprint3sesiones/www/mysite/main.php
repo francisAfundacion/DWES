@@ -73,7 +73,7 @@
 						//echo "ENTRO EN EL BUCLE MOVERME POR LAS COLUMNAS <br>";
 						//echo "valor columna =>". $fila[$columna].;
 						if ($columna == 0){
-							echo "<td><a href='http://localhost:8083/detail.php?id=".$fila[$columna]."'>".$fila[$columna]."</a></td>";
+							echo "<td><a href='http://localhost:8084/detail.php?id=".$fila[$columna]."'>".$fila[$columna]."</a></td>";
 						}else{
 							if ($columna == 2){
 								echo "<td><img src=".$fila[$columna]."></td>";
