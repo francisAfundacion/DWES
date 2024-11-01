@@ -53,9 +53,8 @@ RECURSOS USARÉ => mysqli_fetch
         $resultado_consulta = mysqli_query($db, $consulta) or die('No se ha producido la consulta');
         session_start();
         sleep(5);
-        $_SESSION = mysqli_insert_id($db);
+        $_SESSION['id_usuario'] = mysqli_insert_id($db);
         header('Location:main.php');
-
     }
         
 
