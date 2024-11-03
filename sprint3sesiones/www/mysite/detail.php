@@ -79,5 +79,9 @@
             <input type="hidden" name="id" value=<?php echo $id_libro?>>
             <input type="submit" value="Comentar">
         </form>
+        <?php
+		echo "<a href=/logout.php>Cerrar Sesión</a>";
+	    ?>
     </body>
+
 </html>
