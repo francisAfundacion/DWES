@@ -59,6 +59,7 @@
 			<th>precio</th>
 		</tr>
 	
+	
 		<?php
 				//echo "ENTRO EN EL PHP PARA GENERAR FILAS";
 				$consulta = "SELECT * FROM tLibros";
@@ -88,6 +89,8 @@
 				mysqli_close($db);
 		?>
 
-
 	</table>
+	<?php
+		echo "<a href=/logout.php>Cerrar Sesión</a>";
+	?>
 </html>
