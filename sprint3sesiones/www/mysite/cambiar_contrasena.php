@@ -3,8 +3,11 @@
     function comprobar_contrasenas($vieja, $nueva,$confirmacion,$email){
         global $db;
         $mensajetxt = "";
-        $consulta_contrasena_usuario = "SELECT contraseña from tUsuarios where email='". $email ."'";
-        $resultado_contrasena_usuario = mysqli_query($db,$consulta_contrasena_usuario);
+        $consulta_contrasena_usuario = $db -> prepare("SELECT contraseña from tUsuarios where email=?");
+        $consulta_contrasena_usuario -> bind_param("s",$email);
+        $consulta_contrasena_usuario -> execute();
+        $resultado_contrasena_usuario = $consulta_contrasena_usuario -> get_result();
+        $consulta_contrasena_usuario -> close();
         $fila = mysqli_fetch_array($resultado_contrasena_usuario);
 
         if (!password_verify($vieja,$fila['contraseña']) ){
@@ -25,8 +28,12 @@
     function existe_email($email){
         global $db;
         $existe = true;
-        $consulta = "SELECT * FROM tUsuarios where email ='" . $email . "'";
-        $resultado_consulta = mysqli_query($db,$consulta);
+        $consulta = $db -> prepare("SELECT * FROM tUsuarios where email =?");
+        $consulta -> bind_param("s",$email);
+        $consulta -> execute();
+        $resultado_consulta = $consulta -> get_result();
+        $consulta -> close();
+
         if (mysqli_num_rows($resultado_consulta) == 0){
             $existe = false;
         }
@@ -34,18 +41,26 @@
     }
     
     function cambiar_contrasena_bd($nueva,$email){
-       // echo "entro en cambiar pass";
+        echo "entro en cambiar pass";
         global $db;
         $nueva_contrasena_hasheada = password_hash($nueva,PASSWORD_DEFAULT);
-        //echo "<br>COntraseña pasheada => ".$nueva_contrasena_hasheada;
-        $consulta_id_usuario = "SELECT id from tUsuarios where email='". $email ."'";
-       // echo "<br>consulta id usuario  => ".$consulta_id_usuario;
-        $resultado_id_usuario = mysqli_query($db,$consulta_id_usuario);
-        $fila = mysqli_fetch_array($resultado_id_usuario);
-        //echo "<br>".$fila['id'];
-        $consulta_modif_contrasena ="UPDATE tUsuarios SET contraseña='". $nueva_contrasena_hasheada ."'where id=". $fila['id'];
-        //echo "consulta update =>".$consulta_modif_contrasena;
-        mysqli_query($db,$consulta_modif_contrasena);
+      //  echo "<br>COntraseña pasheada => ".$nueva_contrasena_hasheada;
+        $consulta_id_usuario = $db -> prepare("SELECT id FROM tUsuarios WHERE email=?");
+        $consulta_id_usuario -> bind_param("s",$email);
+        $consulta_id_usuario -> execute();
+        $resultado_consulta = $consulta_id_usuario -> get_result();
+        $consulta_id_usuario -> close();
+       // echo "<br>".$consulta_id_usuario."<br>";
+        $fila = mysqli_fetch_array($resultado_consulta);
+        echo $fila['id'];
+      // echo "<br>consulta id usuario  => ".$consulta_id_usuario;
+      //  echo "<br>".$fila['id'];
+        $consulta_modif_contrasena = $db -> prepare("UPDATE tUsuarios SET contraseña=? where id=?");
+        $consulta_modif_contrasena -> bind_param("si",$nueva_contrasena_hasheada,$fila['id']);
+        $consulta_modif_contrasena -> execute();
+        $consulta_modif_contrasena -> close();
+        echo "consulta update => HECHO CONE EXITO";
+     
 
     }
     
