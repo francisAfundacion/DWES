@@ -1,19 +1,16 @@
 <?php
     $db = mysqli_connect('localhost','root','1234','mysitedb');
-    /*
-    3. Añade un formulario login.html como el del apartado 3. Añade una página
-login.php que permita al usuario loguearse y redirija a la página principal. Verifica
-que funciona. Verifica el comportamiento si introduces un email que no existe o una
-contraseña incorrecta. Para comprobar la contraseña usa
-password_verify($pasword_introducido, $password_hasheado). Haz commit y
-push.
-    */
     function comprobar_cuenta_existe ($email,$pass){
+        echo "llego a comprobar cuenta existe";
+
         global $db;
         $mensajetxt = "";
-        $consulta = "SELECT * FROM tUsuarios WHERE email='". $email ."'";
-        $resultado_consulta = mysqli_query($db,$consulta);
-        echo $fila['contraseña'];
+        $consulta = $db -> prepare("SELECT * FROM tUsuarios WHERE email=?");
+        $consulta -> bind_param("s",$email);
+        $consulta -> execute();
+        $resultado_consulta = $consulta -> get_result();
+        $consulta -> close();
+
         if (mysqli_num_rows($resultado_consulta) == 0){
             $mensajetxt = "¡ERROR!El email introducido no existe!";
         }
@@ -30,7 +27,7 @@ push.
             }
         }
         return $mensajetxt;
-    }
+    }  
 ?>
 <html>
 <head>
