@@ -23,11 +23,13 @@ RECURSOS USARÉ => mysqli_fetch
 
     function comprobar_credenciales ($email,$pass,$pass_confirm){
         global $db; // para poder acceder a la base de datos definida globalmente.
-        $consulta = "SELECT * FROM tUsuarios WHERE email='". $email ."'";
         $valido=true;
         $mensajetxt = "";
-        $resultado_consulta = mysqli_query($db,$consulta);
-        $fila = mysqli_fetch_array($resultado_consulta);
+        $consulta =$db-> prepare("SELECT * FROM tUsuarios WHERE email=?");
+        $consulta -> bind_param("s",$email);
+        $consulta -> execute();
+        $resultado_consulta = $consulta -> get_result();
+        $consulta -> close();
 
         if (mysqli_num_rows($resultado_consulta) > 0){
             $mensajetxt = "¡Error!Ya existe el email en la base de datos.";
@@ -49,8 +51,11 @@ RECURSOS USARÉ => mysqli_fetch
     function dar_alta ($email,$pass){ 
         global $db;
         $pass_heasheada = password_hash($pass, PASSWORD_DEFAULT);
-        $consulta = "INSERT INTO tUsuarios(nombre, apellidos, email, contraseña) VALUES(NULL, NULL, '". $email ."','". $pass_heasheada ."')";
-        $resultado_consulta = mysqli_query($db, $consulta) or die('No se ha producido la consulta');
+        $consulta = $db -> prepare("INSERT INTO tUsuarios(nombre, apellidos, email, contraseña) VALUES(NULL, NULL,?,?)");
+        $consulta -> bind_param("ss",$email,$pass_heasheada);
+        $consulta -> execute();
+        $resultado_consulta = $consulta -> get_result();
+        $consulta -> close();
         session_start();
         sleep(5);
         $_SESSION['id_usuario'] = mysqli_insert_id($db);
