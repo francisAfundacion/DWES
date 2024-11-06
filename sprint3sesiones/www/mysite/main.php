@@ -31,8 +31,15 @@
 					th{
 						background-color:#f5bdcd;
 					}
-					td{
+					td {
 						color: hsl(330, 80%, 27%);
+					}
+					@keyframes fadeIn {
+						from {opacity:1;}
+						to{opacity:0.6;}
+					}
+					.fadeIn:hover{
+						animation:fadeIn 4s ease;
 					}
 					a:link{
 						color:hsl(330, 80%, 27%);
