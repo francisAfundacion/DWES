@@ -1,0 +1,96 @@
+<?php
+    $db = mysqli_connect('localhost','root','1234','mysitedb');
+    function comprobar_contrasenas($vieja, $nueva,$confirmacion,$email){
+        global $db;
+        $mensajetxt = "";
+        $consulta_contrasena_usuario = "SELECT contraseña from tUsuarios where email='". $email ."'";
+        $resultado_contrasena_usuario = mysqli_query($db,$consulta_contrasena_usuario);
+        $fila = mysqli_fetch_array($resultado_contrasena_usuario);
+
+        if (!password_verify($vieja,$fila['contraseña']) ){
+            $mensajetxt = "¡ERROR¡La  contraseña antigua no coincide con la que está guardada en la base de datos!";
+        }
+        else{
+            if($vieja == $nueva){
+                $mensajetxt= "¡ERROR¡La nueva contraseña no puede ser idéntica a la antigua!";
+            }
+            else{
+                if ($nueva != $confirmacion){
+                    $mensajetxt= "¡ERROR!¡La nueva contraseña no coincide con su respectiva confirmación!";
+                }
+            }
+        }
+        return $mensajetxt;
+    }
+    function existe_email($email){
+        global $db;
+        $existe = true;
+        $consulta = "SELECT * FROM tUsuarios where email ='" . $email . "'";
+        $resultado_consulta = mysqli_query($db,$consulta);
+        if (mysqli_num_rows($resultado_consulta) == 0){
+            $existe = false;
+        }
+        return $existe;
+    }
+    
+    function cambiar_contrasena_bd($nueva,$email){
+       // echo "entro en cambiar pass";
+        global $db;
+        $nueva_contrasena_hasheada = password_hash($nueva,PASSWORD_DEFAULT);
+        //echo "<br>COntraseña pasheada => ".$nueva_contrasena_hasheada;
+        $consulta_id_usuario = "SELECT id from tUsuarios where email='". $email ."'";
+       // echo "<br>consulta id usuario  => ".$consulta_id_usuario;
+        $resultado_id_usuario = mysqli_query($db,$consulta_id_usuario);
+        $fila = mysqli_fetch_array($resultado_id_usuario);
+        //echo "<br>".$fila['id'];
+        $consulta_modif_contrasena ="UPDATE tUsuarios SET contraseña='". $nueva_contrasena_hasheada ."'where id=". $fila['id'];
+        //echo "consulta update =>".$consulta_modif_contrasena;
+        mysqli_query($db,$consulta_modif_contrasena);
+
+    }
+    
+?>
+<?php
+    $valido=true;
+    $mensajetxt="";
+    if (!isset($_POST['flast_pass'])or !isset($_POST['fnew_pass']) or !isset($_POST['fnew_pass_confirm']) or !isset($_POST['email']) ){
+        echo "¡ERROR!Alguno de los campos para cambiar la contraseña no han llegado correctamente!";
+    }
+    else{
+        $last_pass = $_POST['flast_pass'];
+        $new_pass = $_POST['fnew_pass'];
+        $new_pass_confirm =  $_POST['fnew_pass_confirm'];
+        $email = $_POST['email'];
+
+        if (empty($email)){
+            echo "ERROR¡Se ha dejado vacío el campo relativo al email del usuario que desea cambiar la contraseña!";
+            $valido=false;
+        }
+        if (empty($last_pass)) {
+            echo "ERROR¡Se ha dejado vacío el campo relativo a la antigua contraseña!";
+            $valido=false;
+        }
+        if (empty($new_pass)){
+            echo "ERROR¡Se ha dejado vacío el campo relativo a la nueva contraseña!";
+            $valido=false;
+        }
+        if (empty($new_pass_confirm)){
+            echo "ERROR¡Se ha dejado vacío el campo relativo a la confirmación de la nueva contraseña";
+            $valido=false;
+        }
+        if ($valido){
+            if (existe_email($email)){
+                $mensajetxt= comprobar_contrasenas($last_pass,$new_pass,$new_pass_confirm,$email);
+                echo $mensajetxt;
+                if ($mensajetxt == ""){
+                    echo "entro en cambair contraseña, antes deivnocar la fucion";
+                    cambiar_contrasena_bd($new_pass,$email);
+                    echo "¡Cambiada la contraseña con éxito!";
+                }
+            }
+            else{
+                echo "ERROR¡No está registrado el email ".$email." en la base de datos!";
+            }
+        }
+    }
+?>
