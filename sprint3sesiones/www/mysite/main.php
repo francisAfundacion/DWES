@@ -36,7 +36,7 @@
 					}
 					@keyframes fadeIn {
 						from {opacity:1;}
-						to{opacity:0.6;}
+						to{opacity:0.4;}
 					}
 					.fadeIn:hover{
 						animation:fadeIn 4s ease;
@@ -59,11 +59,11 @@
 
 	<table>
 		<tr>
-			<th>id</th>
-			<th>nombre</th>
-			<th>url_imagen</th>
-			<th>autor</th>
-			<th>precio</th>
+			<th> <span class="fadeIn">id</span></th>
+			<th><span class="fadeIn">nombre</span></th>
+			<th><span class="fadeIn">url_imagen</span></th>
+			<th><span class="fadeIn">autor</span></th>
+			<th><span class="fadeIn">precio</span></th>
 		</tr>
 	
 	
@@ -81,13 +81,13 @@
 						//echo "ENTRO EN EL BUCLE MOVERME POR LAS COLUMNAS <br>";
 						//echo "valor columna =>". $fila[$columna].;
 						if ($columna == 0){
-							echo "<td><a href='http://localhost:8084/detail.php?id=".$fila[$columna]."'>".$fila[$columna]."</a></td>";
+							echo "<td><a class=fadeIn href='http://localhost:8084/detail.php?id=".$fila[$columna]."'>".$fila[$columna]."</a></td>";
 						}else{
 							if ($columna == 2){
-								echo "<td><img src=".$fila[$columna]."></td>";
+								echo "<td><img class=fadeIn src=".$fila[$columna]."></td>";
 							}
 							else{
-								echo "<td>".$fila[$columna]."</td>";
+								echo "<td> <span class=fadeIn>".$fila[$columna]."</span></td>";
 							}
 						}	
 					}
