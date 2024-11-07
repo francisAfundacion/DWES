@@ -1,15 +1,17 @@
 <?php
     $db = mysqli_connect('localhost','root','1234','mysitedb');
-    function comprobar_contrasenas($vieja, $nueva,$confirmacion,$email){
+    function comprobar_contrasenas($vieja, $nueva,$confirmacion){
+        session_start();
         global $db;
         $mensajetxt = "";
-        $consulta_contrasena_usuario = $db -> prepare("SELECT contraseña from tUsuarios where email=?");
-        $consulta_contrasena_usuario -> bind_param("s",$email);
+        $consulta_contrasena_usuario = $db -> prepare("SELECT contraseña from tUsuarios where id=?");
+        $consulta_contrasena_usuario -> bind_param("i",$_SESSION['id_usuario']);
         $consulta_contrasena_usuario -> execute();
         $resultado_contrasena_usuario = $consulta_contrasena_usuario -> get_result();
         $consulta_contrasena_usuario -> close();
         $fila = mysqli_fetch_array($resultado_contrasena_usuario);
-
+        echo $fila['contraseña']."<br>";
+        echo $vieja;
         if (!password_verify($vieja,$fila['contraseña']) ){
             $mensajetxt = "¡ERROR¡La  contraseña antigua no coincide con la que está guardada en la base de datos!";
         }
@@ -71,7 +73,7 @@
                     echo "¡Cambiada la contraseña con éxito!";
                 }
             else{
-                echo "ERROR¡No está registrado el email ".$email." en la base de datos!";
+                echo "ERROR¡No se ha cambiado la contraseña correctamente!";
             }
         }
     }
