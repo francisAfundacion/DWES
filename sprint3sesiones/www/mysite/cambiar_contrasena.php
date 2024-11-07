@@ -13,15 +13,15 @@
         echo $fila['contraseña']."<br>";
         echo $vieja;
         if (!password_verify($vieja,$fila['contraseña']) ){
-            $mensajetxt = "¡ERROR¡La  contraseña antigua no coincide con la que está guardada en la base de datos!";
+            $mensajetxt = "<p>¡ERROR¡La  contraseña antigua no coincide con la que está guardada en la base de datos!</p>";
         }
         else{
             if($vieja == $nueva){
-                $mensajetxt= "¡ERROR¡La nueva contraseña no puede ser idéntica a la antigua!";
+                $mensajetxt= "<p>¡ERROR¡La nueva contraseña no puede ser idéntica a la antigua!</p>";
             }
             else{
                 if ($nueva != $confirmacion){
-                    $mensajetxt= "¡ERROR!¡La nueva contraseña no coincide con su respectiva confirmación!";
+                    $mensajetxt= "<p>¡ERROR!¡La nueva contraseña no coincide con su respectiva confirmación!</p>";
                 }
             }
         }
@@ -45,7 +45,7 @@
     $valido=true;
     $mensajetxt="";
     if (!isset($_POST['flast_pass']) or !isset($_POST['fnew_pass']) or !isset($_POST['fnew_pass_confirm'])){
-        echo "¡ERROR!Alguno de los campos para cambiar la contraseña no han llegado correctamente!";
+        echo "<p>¡ERROR!Alguno de los campos para cambiar la contraseña no han llegado correctamente!</p>";
     }
     else{
         $last_pass = $_POST['flast_pass'];
@@ -53,15 +53,15 @@
         $new_pass_confirm =  $_POST['fnew_pass_confirm'];
 
         if (empty($last_pass)) {
-            echo "ERROR¡Se ha dejado vacío el campo relativo a la antigua contraseña!";
+            echo "<p>ERROR¡Se ha dejado vacío el campo relativo a la antigua contraseña!</p>";
             $valido=false;
         }
         if (empty($new_pass)){
-            echo "ERROR¡Se ha dejado vacío el campo relativo a la nueva contraseña!";
+            echo "<p>ERROR¡Se ha dejado vacío el campo relativo a la nueva contraseña!</p>";
             $valido=false;
         }
         if (empty($new_pass_confirm)){
-            echo "ERROR¡Se ha dejado vacío el campo relativo a la confirmación de la nueva contraseña";
+            echo "<p>ERROR¡Se ha dejado vacío el campo relativo a la confirmación de la nueva contraseña</p>";
             $valido=false;
         }
         if ($valido){
@@ -70,10 +70,10 @@
                 if ($mensajetxt == ""){
                     echo "entro en cambair contraseña, antes deivnocar la fucion";
                     cambiar_contrasena_bd($new_pass,$email);
-                    echo "¡Cambiada la contraseña con éxito!";
+                    echo "<p>¡Cambiada la contraseña con éxito!</p>";
                 }
             else{
-                echo "ERROR¡No se ha cambiado la contraseña correctamente!";
+                echo "<p>ERROR¡No se ha cambiado la contraseña correctamente!</p>";
             }
         }
     }
