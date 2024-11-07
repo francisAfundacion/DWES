@@ -64,12 +64,7 @@
         $last_pass = $_POST['flast_pass'];
         $new_pass = $_POST['fnew_pass'];
         $new_pass_confirm =  $_POST['fnew_pass_confirm'];
-        $email = $_POST['email'];
 
-        if (empty($email)){
-            echo "ERROR¡Se ha dejado vacío el campo relativo al email del usuario que desea cambiar la contraseña!";
-            $valido=false;
-        }
         if (empty($last_pass)) {
             echo "ERROR¡Se ha dejado vacío el campo relativo a la antigua contraseña!";
             $valido=false;
