@@ -15,8 +15,6 @@
                 $resultado_contrasena_usuario = $consulta_contrasena_usuario -> get_result();
                 $consulta_contrasena_usuario -> close();
                 $fila = mysqli_fetch_array($resultado_contrasena_usuario);
-                echo $fila['contraseña']."<br>";
-                echo $vieja;
                 if (!password_verify($vieja,$fila['contraseña']) ){
                     $mensajetxt = "<p>¡ERROR¡La  contraseña antigua no coincide con la que está guardada en la base de datos!</p>";
                 }
@@ -41,7 +39,6 @@
                 $consulta_modif_contrasena -> bind_param("si",$nueva_contrasena_hasheada,$_SESSION['id_usuario']);
                 $consulta_modif_contrasena -> execute();
                 $consulta_modif_contrasena -> close();
-                echo "consulta update => HECHO CONE EXITO";
             }
             
             
@@ -73,7 +70,6 @@
                         $mensajetxt= comprobar_contrasenas($last_pass,$new_pass,$new_pass_confirm,$email);
                         echo $mensajetxt;
                         if ($mensajetxt == ""){
-                            echo "entro en cambair contraseña, antes deivnocar la fucion";
                             cambiar_contrasena_bd($new_pass,$email);
                             echo "<p>¡Cambiada la contraseña con éxito!</p>";
                         }
