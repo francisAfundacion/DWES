@@ -66,6 +66,7 @@ RECURSOS USARÉ => mysqli_fetch
 ?>
 <html>
     <head>
+    <link rel="stylesheet" href="errores.css">
         <title>Ejercicio2</title>
     </head>
     <body>
