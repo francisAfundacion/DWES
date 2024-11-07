@@ -32,12 +32,12 @@ RECURSOS USARÉ => mysqli_fetch
         $consulta -> close();
 
         if (mysqli_num_rows($resultado_consulta) > 0){
-            $mensajetxt = "¡Error!Ya existe el email en la base de datos.";
+            $mensajetxt = "<p>¡Error!Ya existe el email en la base de datos.</p>";
             $valido= false;
         }
         else{
             if ($pass != $pass_confirm){
-                $mensajetxt = "¡Error!La contraseña y la confirmación no coinciden.";
+                $mensajetxt = "<p>¡Error!La contraseña y la confirmación no coinciden.</p>";
                 $valido = false;
             }
         }
@@ -70,23 +70,19 @@ RECURSOS USARÉ => mysqli_fetch
     </head>
     <body>
         <?php
-            if(!isset($_POST['email'])){
-                echo "No se ha enviado el email.";
+            if(!isset($_POST['email']) or !isset($_POST['fpass']) or !isset($_POST['fpass_confirm']) ){
+                echo "<p>No ha llegado correctamente alguno de los valores de los campos del formulario.</p>";
             }
-            if(!isset($_POST['fpass'])){
-                echo "no se ha enviado la contraseña.";
-            }
-            if(!isset($_POST['fpass_confirm'])){
-                echo "no se ha enviado la confirmación de la contraseña.";
-            }
-            $email = $_POST['email'];
-            $pass = $_POST['fpass'];
-            $pass_confirm = $_POST['fpass_confirm'];
-            if (!empty($email) and !empty($pass) and !empty($pass_confirm)){
-                echo comprobar_credenciales($email,$pass,$pass_confirm);
-            }
-            else{
-                echo "El correo electrónico,la contraseña o la confirmación la contraseña se han  enviado vacíos.";
+            else {
+                $email = $_POST['email'];
+                $pass = $_POST['fpass'];
+                $pass_confirm = $_POST['fpass_confirm'];
+                if (!empty($email) and !empty($pass) and !empty($pass_confirm)){
+                    echo comprobar_credenciales($email,$pass,$pass_confirm);
+                }
+                else{
+                    echo "<p>El correo electrónico,la contraseña o la confirmación la contraseña se han  enviado vacíos.</p>";
+                }
             }
         ?>
     </body>
