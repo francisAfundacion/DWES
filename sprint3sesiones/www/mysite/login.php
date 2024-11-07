@@ -45,6 +45,7 @@
                 echo "El correo electrónico y/o la contraseña se han  enviado vacíos.";
             }
         }
+        mysqli_close($db);
     ?>
 </body>
 </html>
