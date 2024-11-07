@@ -25,21 +25,6 @@
         }
         return $mensajetxt;
     }
-    function existe_email($email){
-        global $db;
-        $existe = true;
-        $consulta = $db -> prepare("SELECT * FROM tUsuarios where email =?");
-        $consulta -> bind_param("s",$email);
-        $consulta -> execute();
-        $resultado_consulta = $consulta -> get_result();
-        $consulta -> close();
-
-        if (mysqli_num_rows($resultado_consulta) == 0){
-            $existe = false;
-        }
-        return $existe;
-    }
-    
       
     function cambiar_contrasena_bd($nueva,$email){
         global $db;
@@ -78,7 +63,6 @@
             $valido=false;
         }
         if ($valido){
-            if (existe_email($email)){
                 $mensajetxt= comprobar_contrasenas($last_pass,$new_pass,$new_pass_confirm,$email);
                 echo $mensajetxt;
                 if ($mensajetxt == ""){
@@ -86,7 +70,6 @@
                     cambiar_contrasena_bd($new_pass,$email);
                     echo "¡Cambiada la contraseña con éxito!";
                 }
-            }
             else{
                 echo "ERROR¡No está registrado el email ".$email." en la base de datos!";
             }
