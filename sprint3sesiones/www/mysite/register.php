@@ -112,6 +112,7 @@ RECURSOS USARÉ => mysqli_fetch
                     echo "<p>El correo electrónico,la contraseña o la confirmación la contraseña se han  enviado vacíos.</p>";
                 }
             }
+            mysqli_close($db);
         ?>
     </body>
 </html>
