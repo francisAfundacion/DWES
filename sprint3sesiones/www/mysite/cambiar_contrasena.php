@@ -57,7 +57,7 @@
 <?php
     $valido=true;
     $mensajetxt="";
-    if (!isset($_POST['flast_pass'])or !isset($_POST['fnew_pass']) or !isset($_POST['fnew_pass_confirm']) or !isset($_POST['email']) ){
+    if (!isset($_POST['flast_pass']) or !isset($_POST['fnew_pass']) or !isset($_POST['fnew_pass_confirm'])){
         echo "¡ERROR!Alguno de los campos para cambiar la contraseña no han llegado correctamente!";
     }
     else{
