@@ -1,8 +1,6 @@
 <?php
     $db = mysqli_connect('localhost','root','1234','mysitedb');
     function comprobar_cuenta_existe ($email,$pass){
-        echo "llego a comprobar cuenta existe";
-
         global $db;
         $mensajetxt = "";
         $consulta = $db -> prepare("SELECT * FROM tUsuarios WHERE email=?");
@@ -22,7 +20,6 @@
             else{
                 session_start();
                 $_SESSION['id_usuario'] = $fila['id'];
-                echo $_SESSION['id_usuario'];
                 header('location:main.php');
             }
         }
@@ -35,20 +32,18 @@
 </head>
 <body>
     <?php
-         if(!isset($_POST['email'])){
-            echo "No se ha enviado el email.";
-        }
-        if(!isset($_POST['fpass'])){
-            echo "no se ha enviado la contraseña.";
-        }
-        $email = $_POST['email'];
-        $pass = $_POST['fpass'];
-        if (!empty($email) and !empty($pass)){
-            echo comprobar_cuenta_existe($email,$pass);
-              
+         if(!isset($_POST['email']) or !isset($_POST['fpass'])){
+            echo "No ha llegado correctamente alguno de los campos del formulario.";
         }
         else{
-            echo "El correo electrónico y/o la contraseña se han  enviado vacíos.";
+            $email = $_POST['email'];
+            $pass = $_POST['fpass'];
+            if (!empty($email) and !empty($pass)){
+                echo comprobar_cuenta_existe($email,$pass);         
+            }
+            else{
+                echo "El correo electrónico y/o la contraseña se han  enviado vacíos.";
+            }
         }
     ?>
 </body>
