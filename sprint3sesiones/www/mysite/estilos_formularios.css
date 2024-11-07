@@ -1,0 +1,12 @@
+body{
+    font-style: "sans serif,Arial";
+    font-size:16px;
+    color:brown;
+    text-shadow:1px 1px 1px black;
+    background-color:hwb(69 87% 5%);
+}
+
+input{
+    display:block;
+    border-radius: 10px 10px;
+}
