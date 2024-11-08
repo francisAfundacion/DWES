@@ -98,7 +98,7 @@
 
 	</table>
 	<?php
-		echo "<a href=/logout.php>Cerrar Sesión</a>";
+		echo "<a href=/logout.php>Cerrar Sesión</a><br>";
 		echo "<a href=cambiar_contrasena.html>Cambiar contraseña</a>"
 	?>
 </html>
