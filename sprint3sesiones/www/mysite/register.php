@@ -1,23 +1,3 @@
-
-   <!-- /*
-    2. Añade un formulario register.html que permita registrar un nuevo usuario, habrá
-dos campos para introducir la contraseña. Añade también una página register.php.
-En esta página se mostrará un mensaje de error si el correo introducido ya existe
-en la base de datos, si hay algún campo vacío o si las contraseñas no coinciden. Si
-el registro se hace correctamente se almacenará al usuario a la base de datos y
-redirigirá al usuario a la página principal. La contraseña no puede almacenarse
-como texto plano. Para cifrarla debemos usar la función
-password_hash($password, PASSWORD_DEFAULT). Haz commit y push.
-    
-RECURSOS USARÉ => mysqli_fetch
-                => session_start()
-                =>$SESSION
-                =>session_destroy()
-                =>mysqli_num_rows();
-                =>header() 
-
-*/
-?>-->
 <?php
     //Realizar la conexión con la base de datos mysitedb
     $db = mysqli_connect ('localhost','root','1234','mysitedb') or die ('Fallo al conectarse a la base de datos.');
