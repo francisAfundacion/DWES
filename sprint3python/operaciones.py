@@ -13,7 +13,7 @@ def division (num1, num2):
         resultado = num1 / num2
         return resultado
     except ZeroDivisionError:
-        resultado = "No se puede efectuar divisiones, cuando el denominador presenta el valor 0
+        resultado = "No se puede efectuar divisiones, cuando el denominador presenta el valor 0"
 
 
 
