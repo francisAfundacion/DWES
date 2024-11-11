@@ -11,9 +11,9 @@ def multiplicacion (num1, num2):
 def division (num1, num2):
     try:
         resultado = num1 / num2
-        return resultado
     except ZeroDivisionError:
         resultado = "No se puede efectuar divisiones, cuando el denominador presenta el valor 0"
+    return resultado
 
 
 
