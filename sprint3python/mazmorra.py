@@ -23,6 +23,8 @@ class Mazmorra:
         self.monstruos = [
             Monstruo("Goblin", 10, 2, 20),
             Monstruo("Trol", 6, 7, 40),
+            Monstruo("Caballero", 12, 10, 32),
+            Monstruo("Banshee", 9, 12, 25),
             Monstruo("Esqueleto viviente", 3, 4, 28),
             Monstruo("Dragón legendario", 20, 15, 200)
         ]
@@ -95,7 +97,7 @@ class Mazmorra:
         int: Un valor aleatorio que representa el tipo de beneficio obtenido.
         """
         print("Buscando tesoro...")
-        return random.randint(0, len(self.tesoro.beneficios) - 1)
+        return random.choice(self.tesoro.get_beneficios())
 
     def jugar(self):
         """
