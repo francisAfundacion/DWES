@@ -146,3 +146,12 @@ class Mazmorra:
                 self.heroe.set_salud(self.heroe.get_salud() + ADITIVO_STAT)
             else:
                 self.heroe.set_salud(self.heroe.get_salud_maxima())
+                
+def main():
+    nombre_heroe = input("Introduzca nombre del héroe: ")
+    heroe= Heroe(nombre_heroe)
+    mazmorra_instancia = Mazmorra(heroe)
+    mazmorra_instancia.jugar()
+
+if __name__ == "__main__":
+    main()
