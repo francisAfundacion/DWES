@@ -116,7 +116,6 @@ class Heroe:
                 enemigo.set_salud(0)
             else:
                 enemigo.set_salud(enemigo.get_salud() - dano_infligido)
-            print(f"salud actual enemigo {enemigo.get_salud()}")
             print(f"El enemigo {enemigo.get_nombre()} ha recibido {dano_infligido} puntos de daño.")
         else:
             print(f"El enemigo ha bloqueado el ataque.")
@@ -142,7 +141,7 @@ class Heroe:
         """
         INCREMENTO_DEFENSA = 5
         self.defensa = self.defensa + INCREMENTO_DEFENSA
-        print(f"Héroe se defiende. Defensa aumentada temporalmente a {self.defensa + INCREMENTO_DEFENSA}.")
+        print(f"Héroe se defiende. Defensa aumentada temporalmente a {self.defensa}.")
 
     def reset_defensa(self):
         """
