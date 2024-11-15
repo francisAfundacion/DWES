@@ -95,7 +95,7 @@ class Mazmorra:
         int: Un valor aleatorio que representa el tipo de beneficio obtenido.
         """
         print("Buscando tesoro...")
-        return random.randint(0, len(self.monstruos) - 1)
+        return random.randint(0, len(self.tesoro.beneficios) - 1)
 
     def jugar(self):
         """
@@ -146,7 +146,7 @@ class Mazmorra:
                 self.heroe.set_salud(self.heroe.get_salud() + ADITIVO_STAT)
             else:
                 self.heroe.set_salud(self.heroe.get_salud_maxima())
-                
+
 def main():
     nombre_heroe = input("Introduzca nombre del héroe: ")
     heroe= Heroe(nombre_heroe)
