@@ -52,8 +52,6 @@ class Mazmorra:
             if diccionario_opciones_combate.get(opcion_combate) is None:
                 print("Opción no válida.")
                 valido = False
-
-        print(f"{valido} y {diccionario_opciones_combate.get(opcion_combate)}")
         return opcion_combate
 
     def enfrentar_enemigo(self, enemigo):
