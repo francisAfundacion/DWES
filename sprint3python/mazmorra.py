@@ -95,7 +95,7 @@ class Mazmorra:
         int: Un valor aleatorio que representa el tipo de beneficio obtenido.
         """
         print("Buscando tesoro...")
-        return random.randint(0, len(self.monstruos))
+        return random.randint(0, len(self.monstruos) - 1)
 
     def jugar(self):
         """
