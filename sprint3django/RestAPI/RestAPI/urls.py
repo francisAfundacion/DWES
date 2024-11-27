@@ -20,7 +20,6 @@ from webserviceapp import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('test', views.pagina_de_prueba),
     path('libros', views.devolver_libros),
     path('libros/<int:id_libro_peti>', views.devolver_libro_id),
     path ('libros/<int:id_libro_peti>/comentarios', views.guardar_comentario),
