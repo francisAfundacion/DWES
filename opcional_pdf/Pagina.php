@@ -11,7 +11,7 @@
             $titulo = "Certificado Desarrollo de Aplicaciones Web";
             $this -> Image('img/logo.png',0,0, 50, 50);
             $this -> SetFont('Times', 'B', 18);
-            $this -> ln(10);
+            $this -> ln(50);
             $this -> Cell($ancho_pag, 10, $titulo, 0, 1,'C', true);
         }
 
