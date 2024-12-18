@@ -3,25 +3,26 @@
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
     require('fpdf186/fpdf.php');
+
     class PDF extends FPDF{
         function Header () {
             $ancho_pag = $this -> GetPagewidth();
+            $this -> pintar_fondo_pagina($ancho_pag);
             $titulo = "Certificado Desarrollo de Aplicaciones Web";
-           // $this -> SetFillColor(245, 245, 220);
             $this -> Image('img/logo.png',0,0, 50, 50);
             $this -> SetFont('Times', 'B', 18);
-            $this -> ln();
+            $this -> ln(10);
             $this -> Cell($ancho_pag, 10, $titulo, 0, 1,'C', true);
         }
 
-        function pintar_fondo_pagina () {
-            $ancho_pag = $this -> GetPagewidth();
+        function pintar_fondo_pagina ($ancho_pag) {
             $alto_pag = $this -> GetPageheight();
             $this -> SetFillColor(245, 245, 220);
             $this -> Cell ($ancho_pag, $alto_pag,'', 0, 0, 'C', true);
-
         }
+       
     }
+
     function validar_campo ($campo) {
         $LETRAS = "abcdefghijklmnopqrstuvwxyz";
         $campo = strtolower($campo);
@@ -31,8 +32,6 @@
             }
         }
     }
-
- 
 
     function comprobar_query_params(){
         if (!isset($_GET['name'])){
@@ -52,9 +51,9 @@
         }
         
     }
+
     comprobar_query_params();
     $pdf  = new PDF();
     $pdf -> SetMargins(0, 0, 0);
-    $pdf -> pintar_fondo_pagina();
     $pdf -> Output();
 ?>
