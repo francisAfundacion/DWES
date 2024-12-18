@@ -7,10 +7,11 @@
         function Header () {
             $ancho_pag = $this -> GetPagewidth();
             $titulo = "Certificado Desarrollo de Aplicaciones Web";
+            $this -> SetFillColor(245, 245, 220);
             $this -> Image('img/logo.png',0,0, 50, 50);
             $this -> SetFont('Times', 'B', 18);
             $this -> ln(40);
-            $this -> Cell($ancho_pag,10, $titulo, 0, 1,'C');
+            $this -> Cell($ancho_pag,10, $titulo, 0, 1,'C', true);
         }
     }
     function validar_campo ($campo) {
@@ -43,6 +44,7 @@
     }
     comprobar_query_params();
     $pdf  = new PDF();
+    $pdf -> SetMargins(0, 0, 0);
     $pdf -> AddPage();
     $pdf -> Output();
 ?>
