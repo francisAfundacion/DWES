@@ -7,11 +7,19 @@
         function Header () {
             $ancho_pag = $this -> GetPagewidth();
             $titulo = "Certificado Desarrollo de Aplicaciones Web";
-            $this -> SetFillColor(245, 245, 220);
+           // $this -> SetFillColor(245, 245, 220);
             $this -> Image('img/logo.png',0,0, 50, 50);
             $this -> SetFont('Times', 'B', 18);
-            $this -> ln(40);
-            $this -> Cell($ancho_pag,10, $titulo, 0, 1,'C', true);
+            $this -> ln();
+            $this -> Cell($ancho_pag, 10, $titulo, 0, 1,'C', true);
+        }
+
+        function pintar_fondo_pagina () {
+            $ancho_pag = $this -> GetPagewidth();
+            $alto_pag = $this -> GetPageheight();
+            $this -> SetFillColor(245, 245, 220);
+            $this -> Cell ($ancho_pag, $alto_pag,'', 0, 0, 'C', true);
+
         }
     }
     function validar_campo ($campo) {
@@ -23,6 +31,8 @@
             }
         }
     }
+
+ 
 
     function comprobar_query_params(){
         if (!isset($_GET['name'])){
@@ -45,6 +55,6 @@
     comprobar_query_params();
     $pdf  = new PDF();
     $pdf -> SetMargins(0, 0, 0);
-    $pdf -> AddPage();
+    $pdf -> pintar_fondo_pagina();
     $pdf -> Output();
 ?>
