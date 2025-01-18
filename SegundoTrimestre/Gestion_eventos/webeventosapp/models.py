@@ -10,11 +10,11 @@ class UsuarioPersonalizado(AbstractUser):
         ('participante', 'Participante')
     ]
     tipo = models.CharField(max_length = 20, choices = TIPO_USUARIO)
-    biografia = models.CharField(max_length= 300 ,null = True)
+    biografia = models.CharField(max_length = 300 ,null = True)
 
 class Evento(models.Model):
-    nombre = models.CharField(max_length=100)
-    descripcion = models.CharField(max_length=100)
+    nombre = models.CharField(max_length = 100)
+    descripcion = models.CharField(max_length = 500)
     fecha = models.DateField()
     hora = models.TimeField()
     max_asistencias = models.IntegerField()
