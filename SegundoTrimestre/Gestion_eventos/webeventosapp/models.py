@@ -35,7 +35,7 @@ class Reserva(models.Model):
     evento = models.ForeignKey(Evento, on_delete = models.CASCADE)
 
 class Comentario(models.Model):
-    texto = models.CharField(max_length = 100)
+    texto = models.CharField(max_length = 250)
     fecha = models.DateTimeField(default = datetime.now())
     usuario = models.ForeignKey(UsuarioPersonalizado, on_delete = models.CASCADE)
     evento = models.ForeignKey(Evento, on_delete = models.CASCADE)
