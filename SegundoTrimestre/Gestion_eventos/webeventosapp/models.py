@@ -4,6 +4,7 @@ from django.db import models
 from datetime import datetime
 from django.contrib.auth.models import AbstractUser
 
+# Modelo para crear un usuario personalizado extendiendo el modelo AbstractUser de Django
 class UsuarioPersonalizado(AbstractUser):
     TIPO_USUARIO = [
         ('organizador', 'Organizador'),
@@ -21,6 +22,10 @@ class Evento(models.Model):
     usuario = models.ForeignKey(UsuarioPersonalizado, on_delete = models.CASCADE)
 
     def __str__ (self):
+        """
+          Método que devuelve una representación en forma de cadena del objeto Evento.
+          En este caso, devuelve el nombre del evento.
+          """
         return self.nombre
 
 class Reserva(models.Model):
