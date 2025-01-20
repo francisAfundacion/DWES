@@ -20,7 +20,7 @@ class Evento(models.Model):
     hora = models.TimeField()
     max_asistencias = models.IntegerField()
     usuario = models.ForeignKey(UsuarioPersonalizado, on_delete = models.CASCADE)
-    url_img = models.URLField(max_length=350)
+    url_img = models.URLField(max_length=350, null=True)
 
     def __str__ (self):
         """
