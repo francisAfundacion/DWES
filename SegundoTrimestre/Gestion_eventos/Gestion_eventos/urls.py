@@ -1,3 +1,4 @@
+from webeventosapp import views
 """
 URL configuration for Gestion_eventos project.
 
@@ -18,5 +19,6 @@ from django.contrib import admin
 from django.urls import path
 
 urlpatterns = [
+    path('lista_eventos',views.listar_eventos),
     path('admin/', admin.site.urls),
 ]
