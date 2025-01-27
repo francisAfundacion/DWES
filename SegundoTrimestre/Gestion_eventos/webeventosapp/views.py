@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from .models import Evento
+from .models import Evento, UsuarioPersonalizado
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
 from datetime import datetime
+import json
 
 # Create your views here.
 #CRUD de eventos
@@ -51,9 +52,33 @@ def listar_eventos(request):
         "previous": n_pagina -1 if eventos_pagina.has_previous() else None,
         "results":  lista_json_eventos
     }
-
     return JsonResponse(data, safe=False)
 
+@csrf_exempt
+def crear_evento(request):
+    diccionario_nuevo_evento = json.loads(request.body)
+    print(diccionario_nuevo_evento)
+    ##query_param_organizador = request.POST.get("tipo_usuario", "")
+    tipo_usuario = diccionario_nuevo_evento['tipo_usuario']
+    print("LLEGO A VISUALIZAR TIPO_USUARIO")
+    print(tipo_usuario)
+    if request.method == "POST" and tipo_usuario == "organizador":
+        nombre_usuario_post = diccionario_nuevo_evento["usuario"]
+        print(nombre_usuario_post)
+        #consulta_usuario_post = UsuarioPersonalizado.objects.filter(username = nombre_usuario_post), me da query set y no una instancia del modelo
+        consulta_usuario_post = UsuarioPersonalizado.objects.get(username = nombre_usuario_post)
+        print("VISUALIZO CONSULTA USUARIO")
+        print(consulta_usuario_post)
+        Evento.objects.create (
+        nombre =diccionario_nuevo_evento["nombre"],
+        descripcion = diccionario_nuevo_evento["descripcion"],
+        fecha = diccionario_nuevo_evento["fecha"],
+        hora = diccionario_nuevo_evento["hora"],
+        max_asistencias = diccionario_nuevo_evento["max_asistencias"],
+        usuario = consulta_usuario_post,
+        url_img = diccionario_nuevo_evento["url_img"]
+        )
+    return JsonResponse({"nombre": diccionario_nuevo_evento["nombre"], "mensaje": "Evento guardado correctamente."})
 
 
 
