@@ -80,6 +80,37 @@ def crear_evento(request):
         )
     return JsonResponse({"nombre": diccionario_nuevo_evento["nombre"], "mensaje": "Evento guardado correctamente."})
 
+@csrf_exempt
+def actualizar_evento(request, id):
+    if request.method  in ["PUT", "PATCH"]:
+        print(id)
+        print (request.method)
+        campos_modif_evento = json.loads(request.body)
+        print(campos_modif_evento)
+        tipo_usuario = campos_modif_evento["tipo_usuario"]
+        print(tipo_usuario)
+        if tipo_usuario == "organizador":
+            nombre_usuario = campos_modif_evento.get("usuario", "")
+            print(nombre_usuario)
+            evento = Evento.objects.get(id = id)
+            evento.nombre = campos_modif_evento.get("nombre", evento.nombre)
+            evento.descripcion = campos_modif_evento.get("descripcion", evento.descripcion)
+            evento.fecha =  campos_modif_evento.get("fecha", evento.fecha)
+            evento.hora = campos_modif_evento.get("hora", evento.hora)
+            evento.max_asistencias = campos_modif_evento.get("max_asistencias", evento.max_asistencias)
+            if nombre_usuario == "":
+                consulta_usuario = UsuarioPersonalizado.objects.get(username=nombre_usuario)
+                print(consulta_usuario)
+                evento.usuario = campos_modif_evento.get("usuario",consulta_usuario)
+            evento.url_img = campos_modif_evento.get("url_img",evento.url_img)
+            evento.save()
+    return JsonResponse({"mensaje": "Producto actualizado"})
+
+
+
+
+
+
 
 
 #GET: Listar todos los eventos disponibles (filtros opcionales por título o fecha, ordenados y paginados con un límite de 5 elementos por página).
