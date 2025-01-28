@@ -106,6 +106,19 @@ def actualizar_evento(request, id):
             evento.save()
     return JsonResponse({"mensaje": "Producto actualizado"})
 
+@csrf_exempt
+def eliminar_evento(request, id):
+    print(id)
+    data = json.loads(request.body)
+    print(data)
+    tipo_usuario = data["tipo_usuario"]
+    print("VOY A IMPRIMIR TIPOUSUARIO")
+    print(tipo_usuario)
+    if tipo_usuario  == "organizador" and request == "DELETE":
+        evento_eliminar = Evento.objects.get(id = id)
+        evento_eliminar.delete()
+    return JsonResponse({"mensaje": "Producto eliiminado"})
+
 
 
 
