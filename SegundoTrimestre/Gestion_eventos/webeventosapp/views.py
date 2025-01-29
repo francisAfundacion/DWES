@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from .models import Evento, UsuarioPersonalizado
+from .models import Evento, UsuarioPersonalizado, Reserva
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
 from datetime import datetime
@@ -119,6 +119,47 @@ def eliminar_evento(request, id):
         evento_eliminar.delete()
     return JsonResponse({"mensaje": "Producto eliiminado"})
 
+
+#reservas
+def listar_reservas(request):
+    diccionario_usuario = json.loads(request.body)
+    autenticado = diccionario_usuario.get("autenticado",False)
+    if autenticado:
+        print(diccionario_usuario)
+        print(diccionario_usuario["usuario"])
+        objeto_usuario = UsuarioPersonalizado.objects.get(username = diccionario_usuario["usuario"])
+        print(objeto_usuario)
+        print("visualizo objeto evento")
+        print(objeto_usuario.tipo)
+        #objeto_evento = Evento.objects.filter(usuario = objeto_usuario)
+        #objeto_evento = Evento.objects.select_related('usuario').filter(usuario = objeto_usuario)
+        #print(objeto_evento)
+        lista_diccionario_reservas = []
+        #consulta_reservas = Reserva.objects.filter(usuario = objeto_usuario)
+        consulta_reservas = Reserva.objects.select_related('usuario').filter(usuario = objeto_usuario)
+        print("visual reservas")
+        print(consulta_reservas)
+        #for
+        print("antes del bucle for")
+        for sql_reserva in consulta_reservas:
+            print("entro bucle llenado lista reservas")
+            diccionario_reserva = {}
+            diccionario_reserva["estado"] = sql_reserva.estado
+            diccionario_reserva["entradas_reservadas"] = sql_reserva.entradas_reservadas
+            diccionario_reserva["usuario"] = objeto_usuario.username
+            diccionario_reserva["evento"] = sql_reserva.evento.nombre
+            print("diccionario_reserva")
+            print(diccionario_reserva)
+            lista_diccionario_reservas.append(diccionario_reserva)
+            print("LISTA DESPUES DE ESTAR LLENA")
+            print(lista_diccionario_reservas)
+    return JsonResponse(lista_diccionario_reservas, safe=False)
+
+#@csrf_exempt
+#def crear_reserva(request, id):
+
+
+    #return la lista de json
 
 
 
