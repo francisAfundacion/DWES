@@ -242,3 +242,37 @@ def actualizar_reserva(request, id):
         reserva_modif.evento = objeto_evento
         reserva_modif.save()
         return JsonResponse({"id": reserva_modif.id, "evento": reserva_modif.evento.nombre, "mensaje": "Reserva actualizada con éxito."})
+
+    @csrf_exempt
+    def eliminar_reserva(request, id):
+
+        """
+           Vista para cancelar una reserva existente.
+
+           Permite a un participante cancelar su reserva especificando el ID de la reserva.
+
+           Parámetros de la solicitud (URL):
+           - tipo_usuario: Tipo de usuario que realiza la solicitud (debe ser 'participante').
+
+           Respuesta:
+           - Si la reserva se elimina correctamente, devuelve el mensaje de éxito.
+           - Si no se encuentra la reserva o el tipo de usuario es incorrecto, devuelve un error.
+           """
+
+        tipo_usuario = request.GET.get("tipo_usuario")
+        if request.method == "DELETE" and tipo_usuario == "participante":
+            try:
+                reserva_eliminar = Reserva.objects.get(id=id)
+                info_reserva = {
+                    "id": reserva_eliminar.id,
+                    "evento": reserva_eliminar.evento.nombre
+                }
+                reserva_eliminar.delete()
+                return JsonResponse({"mensaje": "Evento eliminado con éxito.", "info_reserva": info_reserva})
+            except Reserva.DoesNotExist:
+                return JsonResponse({"mensaje": "¡Error! No existe el id de la reserva que se desea eliminar."},
+                                    status=404)
+        else:
+            return JsonResponse(
+                {"mensaje": "¡Error! El tipo de usuario no es participante. No podrá eliminar reservas."}, status=403)
+
