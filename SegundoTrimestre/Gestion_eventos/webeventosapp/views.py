@@ -313,3 +313,55 @@ def listar_comentarios(request, id):
     except Evento.DoesNotExist:
         return JsonResponse({"mensaje": "¡Error! El id del evento deseada para su listado es incorrecto."}, status = 404)
 
+@csrf_exempt
+def crear_comentario(request):
+
+    """
+       Vista para crear un nuevo comentario para un evento.
+
+       Permite a los usuarios autenticados crear comentarios asociados a un evento específico.
+
+       Parámetros del cuerpo de la solicitud (JSON):
+       - usuario: Nombre del usuario que crea el comentario (obligatorio).
+       - evento: Nombre del evento al que se asocia el comentario (obligatorio).
+       - texto: El contenido del comentario (obligatorio).
+       - fecha: La fecha en que el comentario fue creado (obligatorio).
+
+       Respuesta:
+       - Si el comentario se crea correctamente, devuelve el ID del comentario y el nombre del evento.
+       - Si el usuario no está autenticado o no existen el evento o el usuario, devuelve un error con el mensaje correspondiente.
+
+       Respuesta de error:
+       - Si el usuario no está autenticado, se devuelve un error con código de estado 403 (Prohibido).
+       - Si el usuario no existe en la base de datos, se devuelve un error con código de estado 404 (No encontrado).
+       - Si el evento no existe en la base de datos, se devuelve un error con código de estado 404 (No encontrado).
+       """
+
+    if request.method == "POST":
+        # Verificación de si el usuario está autenticado
+        autenticado = request.GET.get("autenticado", "false").lower() == "true"
+        if not autenticado:
+            return JsonResponse({"mensaje": "No se le permite a usuarios no autenticados crear comentarios."},
+                                status=403)
+        else:
+            # Procesar el cuerpo de la solicitud para crear el comentario
+            diccionario_comentario = json.loads(request.body)
+            nombre_usuario = diccionario_comentario["usuario"]
+            # Verificar si el usuario existe en la base de datos
+            objeto_usuario = UsuarioPersonalizado.objects.get(username=nombre_usuario)
+            try:
+                nombre_evento = diccionario_comentario["evento"]
+                # Verificar si el evento existe en la base de datos
+                objeto_evento = Evento.objects.get(nombre=nombre_evento)
+                # Crear el comentario
+                nuevo_comentario = Comentario.objects.create(
+                    texto=diccionario_comentario["texto"],
+                    fecha=diccionario_comentario["fecha"],
+                    usuario=objeto_usuario,
+                    evento=objeto_evento
+                )
+                return JsonResponse({"id": nuevo_comentario.id, "evento": objeto_evento.nombre,
+                                     "mensaje": "El comentario se ha creado correctamente."}, status=201)
+            except Evento.DoesNotExist:
+                # Error si el evento no existe
+                return JsonResponse({"mensaje": "El evento que se desea asociar en la creación del comentario no existe en nuestra base de datos."},status=404)
