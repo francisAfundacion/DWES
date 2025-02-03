@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from .models import Evento, UsuarioPersonalizado, Reserva, Comentario
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 from django.core.paginator import Paginator
 from datetime import datetime
 import json
@@ -328,7 +329,6 @@ def crear_reserva(request):
        - Si la reserva se crea correctamente, devuelve el ID de la reserva y el nombre del evento.
        - Si el usuario o el evento no existen, devuelve un error.
        """
-
     if request.method == "POST":
         diccionario_nueva_reserva = json.loads(request.body)
         nombre_usuario = diccionario_nueva_reserva["usuario"]
