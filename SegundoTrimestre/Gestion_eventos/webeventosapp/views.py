@@ -395,35 +395,44 @@ def actualizar_reserva(request, id):
 
 
 @csrf_exempt
-def eliminar_reserva(request, id):
-
+def listar_comentarios(request, id):
     """
-       Vista para cancelar una reserva existente.
+    Vista para listar los comentarios asociados a un evento.
 
-       Permite a un participante cancelar su reserva especificando el ID de la reserva.
+    Permite listar los comentarios que los usuarios han realizado en un evento especificado por su ID.
+    """
+    try:
+        # Verificar si el evento con el ID proporcionado existe
+        objeto_evento = Evento.objects.get(id=id)
 
-       Parámetros de la solicitud (URL):
-       - tipo_usuario: Tipo de usuario que realiza la solicitud (debe ser 'participante').
+        # Consultar los comentarios asociados a ese evento utilizando select_related para optimizar la consulta
+        consulta_comentarios = Comentario.objects.select_related('evento').filter(evento=objeto_evento)
 
-       Respuesta:
-       - Si la reserva se elimina correctamente, devuelve el mensaje de éxito.
-       - Si no se encuentra la reserva o el tipo de usuario es incorrecto, devuelve un error.
-       """
-
-    tipo_usuario = request.GET.get("tipo_usuario")
-    if request.method == "DELETE" and tipo_usuario == "participante":
-        try:
-            reserva_eliminar = Reserva.objects.get(id = id)
-            info_reserva = {
-                "id": reserva_eliminar.id,
-                "evento": reserva_eliminar.evento.nombre
+        # Formatear los comentarios en una lista con detalles relevantes
+        lista_comentarios = [
+            {
+                "id": sql_comentario.id,  # Identificador único del comentario
+                "texto": sql_comentario.texto,  # Contenido del comentario
+                "usuario": sql_comentario.usuario.username,  # Nombre de usuario del autor del comentario
+                "fecha": sql_comentario.fecha,  # Fecha en que se realizó el comentario
+                "evento": objeto_evento.nombre  # Nombre del evento asociado al comentario
             }
-            reserva_eliminar.delete()
-            return JsonResponse({"mensaje": "Evento eliminado con éxito.", "info_reserva": info_reserva})
-        except Reserva.DoesNotExist:
-            return JsonResponse({"mensaje": "¡Error! No existe el id de la reserva que se desea eliminar."}, status = 404)
-    else:
-        return JsonResponse({"mensaje": "¡Error! El tipo de usuario no es participante. No podrá eliminar reservas."}, status = 403)
+            for sql_comentario in consulta_comentarios
+        ]
+
+        # Si no hay comentarios para el evento, devolver un mensaje de error
+        if len(lista_comentarios) == 0:
+            return JsonResponse(
+                {"mensaje": "No hay comentarios asociados al evento especificado."},
+                status=404
+            )
+        else:
+            return JsonResponse(lista_comentarios, safe=False)
+
+    except Evento.DoesNotExist:
+        # Manejo de error en caso de que el evento no exista en la base de datos
+        return JsonResponse(
+            {"mensaje": "¡Error! El ID del evento especificado es incorrecto."},status=404)
 
 
 
@@ -466,7 +475,6 @@ def listar_comentarios(request, id):
     # Si el evento no existe
     except Evento.DoesNotExist:
         return JsonResponse({"mensaje": "¡Error! El id del evento deseada para su listado es incorrecto."}, status = 404)
-
 
 @csrf_exempt
 def crear_comentario(request):
