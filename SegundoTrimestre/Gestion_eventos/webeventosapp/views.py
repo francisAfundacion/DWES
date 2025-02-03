@@ -252,31 +252,57 @@ def eliminar_reserva(request, id):
 def listar_reservas(request):
 
     """
-      Vista para listar las reservas de un usuario.
+    Vista para listar las reservas de un usuario.
 
-      Esta vista permite obtener todas las reservas realizadas por un usuario, filtradas por su nombre de usuario.
+    Esta vista permite obtener todas las reservas realizadas por un usuario,
+    filtradas por su nombre de usuario.
 
-      Parámetros del cuerpo de la solicitud (JSON):
-      - usuario: El nombre de usuario para el cual se desean obtener las reservas.
+    Parámetros de la solicitud:
+    - `autenticado` (str): Indica si el usuario está autenticado ("true" o "false").
+    - `usuario` (str): Nombre de usuario para el cual se desean obtener las reservas.
 
-      Respuesta:
-      - Devuelve una lista con las reservas del usuario, incluyendo detalles del evento asociado y el estado de la reserva.
-      - Si el usuario no existe, devuelve un error.
-      """
+    Respuesta:
+    - Devuelve una lista con las reservas del usuario, incluyendo:
+      - ID de la reserva.
+      - Estado de la reserva.
+      - Nombre del usuario.
+      - Nombre del evento asociado.
+      - Número de entradas reservadas.
+    - Si el usuario no está autenticado, devuelve un error 403.
+    - Si el usuario no existe, devuelve un error 404.
+    """
+
     autenticado = request.GET.get("autenticado", "false").lower() == "true"
     print(autenticado)
+
     if not autenticado:
-        return JsonResponse({"mensaje": "El usuario al no estar autenticado, no podrá listar los comentarios."}, status=403)
+        return JsonResponse({"mensaje": "El usuario al no estar autenticado, no podrá listar los comentarios."},
+                            status=403)
+
     nombre_usuario = request.GET.get("usuario")
-    # Obtener el usuario por nombre
-    objeto_usuario = UsuarioPersonalizado.objects.get(username__iexact = nombre_usuario)
-    reservas_usuario = Reserva.objects.select_related('usuario').filter(usuario = objeto_usuario)
-    data_reservas = [{"id": sql_reserva.id, "estado": sql_reserva.estado,
-                    "usuario": nombre_usuario,
-                    "evento": sql_reserva.evento.nombre,
-                    "entradas_reservadas": sql_reserva.entradas_reservadas}
-                    for sql_reserva in reservas_usuario]
-    return JsonResponse(data_reservas, safe = False)
+
+    try:
+        # Obtener el usuario por nombre (ignorando mayúsculas/minúsculas)
+        objeto_usuario = UsuarioPersonalizado.objects.get(username__iexact=nombre_usuario)
+    except ObjectDoesNotExist:
+        return JsonResponse({"mensaje": "El usuario no existe."}, status=404)
+
+    # Obtener todas las reservas del usuario
+    reservas_usuario = Reserva.objects.select_related('usuario').filter(usuario=objeto_usuario)
+
+    # Construcción de la respuesta con los detalles de la reserva
+    data_reservas = [
+        {
+            "id": sql_reserva.id,
+            "estado": sql_reserva.estado,
+            "usuario": nombre_usuario,
+            "evento": sql_reserva.evento.nombre,
+            "entradas_reservadas": sql_reserva.entradas_reservadas,
+        }
+        for sql_reserva in reservas_usuario
+    ]
+
+    return JsonResponse(data_reservas, safe=False)
 
 @csrf_exempt
 def crear_reserva(request):
