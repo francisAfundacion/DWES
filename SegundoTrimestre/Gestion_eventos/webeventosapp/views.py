@@ -175,15 +175,18 @@ def actualizar_evento(request, id):
                 evento.url_img = campos_modif_evento.get("url_img", evento.url_img)
 
                 # Obtener el usuario asociado al evento (se verifica que exista)
-                nombre_usuario = campos_modif_evento.get("usuario", evento.usuario.username)
-                consulta_usuario = UsuarioPersonalizado.objects.get(username=nombre_usuario)
-                evento.usuario = consulta_usuario
+                try:
+                    nombre_usuario = campos_modif_evento.get("usuario", evento.usuario.username)
+                    consulta_usuario = UsuarioPersonalizado.objects.get(username=nombre_usuario)
+                    evento.usuario = consulta_usuario
+                    # Guardar los cambios en el evento
+                    evento.save()
+                    # Responder con el evento actualizado
+                    return JsonResponse({"id": evento.id, "nombre": evento.nombre, "mensaje": "Evento actualizado."})
 
-                # Guardar los cambios en el evento
-                evento.save()
-
-                # Responder con el evento actualizado
-                return JsonResponse({"id": evento.id, "nombre": evento.nombre, "mensaje": "Evento actualizado."})
+                # Si el usuario no existe, devolver error 404
+                except:
+                    return JsonResponse({"mensaje": "No hay ningún usuario como el que se ha especificado en nuestra base de datos. "}, status = 404)
                 # Si el usuario no existe, devolver un error 404
             except Evento.DoesNotExist:
                 # Si el evento no existe, devolver un error 404
