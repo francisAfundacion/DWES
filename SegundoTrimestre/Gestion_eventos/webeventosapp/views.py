@@ -446,3 +446,60 @@ def login(request):
             # Si el nombre de usuario es incorrecto
             return  JsonResponse({"usuario":nombre_usuario, "mensaje":"El username es incorrecto. No ha sido posible iniciar sesión."}, status = 401)
 
+@csrf_exempt
+def register(request):
+
+    """
+        Vista para registrar un nuevo usuario en el sistema.
+
+        Permite la creación de un usuario, donde se deben proporcionar los siguientes datos:
+        - username: Nombre de usuario (obligatorio).
+        - password: Contraseña (obligatoria).
+        - email: Correo electrónico (obligatorio).
+        - tipo_usuario: Tipo de usuario (obligatorio, debe ser 'organizador' o 'participante').
+        - biografia: Biografía del usuario (opcional).
+
+        La función realiza las siguientes validaciones:
+        - Verifica que no se dejen campos obligatorios vacíos (username, password, email, tipo_usuario).
+        - Comprueba que el nombre de usuario, correo electrónico y contraseña no estén siendo utilizados por otro usuario.
+        - Verifica que el tipo de usuario sea uno de los valores permitidos ('organizador' o 'participante').
+
+        Respuesta:
+        - Si todos los datos son válidos, crea un nuevo usuario y devuelve los detalles del usuario junto con un mensaje de éxito.
+        - Si algún campo obligatorio está vacío o hay un error con los datos, se devuelve un mensaje de error indicando el problema.
+        """
+
+    if request.method == "POST":
+        diccionario_usuario_alta = json.loads(request.body)
+        nombre_usuario = diccionario_usuario_alta.get("username", "")
+        pass_usuario = diccionario_usuario_alta.get("password", "")
+        email_usuario = diccionario_usuario_alta.get("email", "")
+        tipo_usuario = diccionario_usuario_alta.get("tipo_usuario", "").lower()
+        print(tipo_usuario)
+        biografia_usuario = diccionario_usuario_alta.get("biografia","")
+
+        # Validación de campos obligatorios
+        if nombre_usuario == "" or pass_usuario == "" or email_usuario == "" or tipo_usuario == "":
+            return JsonResponse({"mensaje": "Se han dejado campo/s obligatorio/s sin rellenar. Recuerda que el único campo opcional es la biografía."}, status = 400)
+
+        # Validación de que los datos sean únicos y tipo de usuario válido
+        if tipo_usuario not in ["organizador","participante"]:
+            return JsonResponse({"tipo_usuario": tipo_usuario, "mensaje": "El tipo de usuario es incorrecto, debería ser organizador o participante."})
+
+        if comprobar_email(email_usuario):
+            return JsonResponse({"email": email_usuario, "mensaje": "El email introducido ya está en uso."})
+
+        if comprobar_username(nombre_usuario):
+            return JsonResponse({"usuario": nombre_usuario, "mensaje": "El nombre de usuario introducido ya está en uso." })
+
+        if comprobar_contrasena(pass_usuario):
+            return JsonResponse({"mensaje": "La contraseña introducida ya está en uso"})
+        # Creación del nuevo usuario
+        nuevo_usuario = UsuarioPersonalizado.objects.create(
+            username = nombre_usuario,
+            password = pass_usuario,
+            email = email_usuario,
+            tipo = tipo_usuario,
+            biografia = biografia_usuario
+        )
+        return JsonResponse({"usuario": nuevo_usuario.username, "email": nuevo_usuario.password, "mensaje": "El usuario ha sido dado de alta con éxito."}, status = 201)
