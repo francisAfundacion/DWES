@@ -384,14 +384,18 @@ def actualizar_reserva(request, id):
         except UsuarioPersonalizado.DoesNotExist:
             return  JsonResponse({"mensaje": "¡Error! No se pudo efectuar la modificación debido a que el nombre de usuario introducido no está registrado."}, status = 404)
         try:
-            # Verificar si el evento existe
-            objeto_evento = Evento.objects.get(nombre__iexact = nombre_evento)
+            if objeto_usuario == "organizador":
+                # Verificar si el evento existe
+                objeto_evento = Evento.objects.get(nombre__iexact = nombre_evento)
+                reserva_modif.usuario = objeto_usuario
+                reserva_modif.evento = objeto_evento
+                reserva_modif.save()
+                return JsonResponse({"id": reserva_modif.id, "evento": reserva_modif.evento.nombre,"mensaje": "Reserva actualizada con éxito."})
+            else:
+                return JsonResponse({"mensaje": "No se le permite  actualizar la reserva al no ser un usuario de tipo organizador.ls"
+                                                ""})
         except Evento.DoesNotExist:
             return JsonResponse({"mensaje": "¡Error! No se pudo efectuar la modificación debido a que el nombre del evento introducido no está registrado."}, status = 404)
-        reserva_modif.usuario = objeto_usuario
-        reserva_modif.evento = objeto_evento
-        reserva_modif.save()
-        return JsonResponse({"id": reserva_modif.id, "evento": reserva_modif.evento.nombre, "mensaje": "Reserva actualizada con éxito."})
 
 
 @csrf_exempt
@@ -572,7 +576,7 @@ def comprobar_email (email_usuario):
        """
     return UsuarioPersonalizado.objects.filter(email = email_usuario).exists()
 
-@csrf_exempt
+
 def login(request):
 
     """
