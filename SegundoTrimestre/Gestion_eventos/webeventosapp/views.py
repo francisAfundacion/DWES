@@ -155,19 +155,44 @@ def listar_reservas(request):
             print(lista_diccionario_reservas)
     return JsonResponse(lista_diccionario_reservas, safe=False)
 
-#@csrf_exempt
-#def crear_reserva(request, id):
+@csrf_exempt
+def crear_reserva(request):
 
+    """
+       Vista para crear una nueva reserva para un evento.
 
-    #return la lista de json
+       Esta vista permite a un usuario crear una reserva para un evento específico.
 
+       Parámetros del cuerpo de la solicitud (JSON):
+       - usuario: Nombre del usuario que está realizando la reserva.
+       - evento: Nombre del evento para el cual se está realizando la reserva.
+       - estado: Estado de la reserva.
+       - entradas_reservadas: Número de entradas reservadas.
 
+       Respuesta:
+       - Si la reserva se crea correctamente, devuelve el ID de la reserva y el nombre del evento.
+       - Si el usuario o el evento no existen, devuelve un error.
+       """
 
-
-
-
-
-#GET: Listar todos los eventos disponibles (filtros opcionales por título o fecha, ordenados y paginados con un límite de 5 elementos por página).
-#POST: Crear un evento (solo organizadores).
-#PUT/PATCH: Actualizar un evento (solo organizadores).
-#DELETE: Eliminar un evento (solo organizadores).
+    if request.method == "POST":
+        diccionario_nueva_reserva = json.loads(request.body)
+        nombre_usuario = diccionario_nueva_reserva["usuario"]
+        nombre_evento = diccionario_nueva_reserva["evento"]
+        try:
+            # Verificar si el usuario existe
+            objeto_usuario = UsuarioPersonalizado.objects.get(username__iexact = nombre_usuario)
+        except UsuarioPersonalizado.DoesNotExist:
+            return JsonResponse({"mensaje": "El username introducido no se asocia con ninguno que esté guardado en nuestra base de datos."}, status = 404)
+        try:
+            # Verificar si el evento existe
+            objeto_evento = Evento.objects.get(nombre__iexact = nombre_evento)
+            nueva_reserva = Reserva.objects.create(
+                estado=diccionario_nueva_reserva["estado"],
+                usuario=objeto_usuario,
+                evento=objeto_evento,
+                entradas_reservadas=diccionario_nueva_reserva["entradas_reservadas"]
+            )
+            return JsonResponse({"id": nueva_reserva.id, "nombre": nueva_reserva.evento.nombre, "mensaje": "Se ha creado la reserva correctamente."}, status = 201)
+        # Si el evento no existe
+        except Evento.DoesNotExist:
+            return JsonResponse({ "mensaje": "El nombre del evento introducido no se asocia con ninguno que esté guardado en nuestra base de datos."}, status = 404)
