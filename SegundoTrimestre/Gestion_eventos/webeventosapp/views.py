@@ -373,18 +373,17 @@ def actualizar_reserva(request, id):
             reserva_modif = Reserva.objects.get(id = id)
         except Reserva.DoesNotExist:
             return JsonResponse({ "mensaje": "¡Error! No existe el id de la reserva que se desea modificar."},status = 404)
-
-        reserva_modif.estado = campos_modif_reserva.get("estado", reserva_modif.estado)
-        reserva_modif.entradas_reservadas = campos_modif_reserva.get("entradas_reservadas", reserva_modif.entradas_reservadas)
-        nombre_usuario = campos_modif_reserva.get("usuario", reserva_modif.usuario.username)
-        nombre_evento = campos_modif_reserva.get("evento", reserva_modif.evento.nombre)
         try:
             # Verificar si el usuario existe
+            nombre_usuario = campos_modif_reserva.get("usuario", reserva_modif.usuario.username)
             objeto_usuario = UsuarioPersonalizado.objects.get(username__iexact = nombre_usuario)
         except UsuarioPersonalizado.DoesNotExist:
             return  JsonResponse({"mensaje": "¡Error! No se pudo efectuar la modificación debido a que el nombre de usuario introducido no está registrado."}, status = 404)
         try:
-            if objeto_usuario == "organizador":
+            if objeto_usuario.tipo == "organizador":
+                reserva_modif.estado = campos_modif_reserva.get("estado", reserva_modif.estado)
+                reserva_modif.entradas_reservadas = campos_modif_reserva.get("entradas_reservadas",reserva_modif.entradas_reservadas)
+                nombre_evento = campos_modif_reserva.get("evento", reserva_modif.evento.nombre)
                 # Verificar si el evento existe
                 objeto_evento = Evento.objects.get(nombre__iexact = nombre_evento)
                 reserva_modif.usuario = objeto_usuario
@@ -392,8 +391,7 @@ def actualizar_reserva(request, id):
                 reserva_modif.save()
                 return JsonResponse({"id": reserva_modif.id, "evento": reserva_modif.evento.nombre,"mensaje": "Reserva actualizada con éxito."})
             else:
-                return JsonResponse({"mensaje": "No se le permite  actualizar la reserva al no ser un usuario de tipo organizador.ls"
-                                                ""})
+                return JsonResponse({"mensaje": "No se le permite  actualizar la reserva al no ser un usuario de tipo organizador."}, status=403)
         except Evento.DoesNotExist:
             return JsonResponse({"mensaje": "¡Error! No se pudo efectuar la modificación debido a que el nombre del evento introducido no está registrado."}, status = 404)
 
