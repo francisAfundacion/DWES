@@ -365,3 +365,48 @@ def crear_comentario(request):
             except Evento.DoesNotExist:
                 # Error si el evento no existe
                 return JsonResponse({"mensaje": "El evento que se desea asociar en la creación del comentario no existe en nuestra base de datos."},status=404)
+
+def comprobar_username(nombre_usuario):
+
+    """
+    Verifica si el nombre de usuario existe en la base de datos.
+
+    Parámetros:
+    - nombre_usuario: El nombre de usuario a verificar.
+
+    Retorna:
+    - True si el nombre de usuario existe.
+    - False si el nombre de usuario no existe.
+    """
+
+    return UsuarioPersonalizado.objects.filter(username = nombre_usuario).exists()
+
+def comprobar_contrasena (pass_usuario):
+
+    """
+       Verifica si la contraseña existe en la base de datos.
+
+       Parámetros:
+       - pass_usuario: La contraseña del usuario.
+
+       Retorna:
+       - True si la contraseña es válida.
+       - False si la contraseña es incorrecta.
+       """
+
+    return UsuarioPersonalizado.objects.filter(password = pass_usuario).exists()
+
+def comprobar_email (email_usuario):
+
+    """
+       Verifica si el email existe en la base de datos.
+
+       Parámetros:
+       - email_usuario: El email del usuario.
+
+       Retorna:
+       - True si el email existe.
+       - False si el email no existe.
+       """
+    return UsuarioPersonalizado.objects.filter(email = email_usuario).exists()
+
