@@ -243,36 +243,73 @@ def actualizar_reserva(request, id):
         reserva_modif.save()
         return JsonResponse({"id": reserva_modif.id, "evento": reserva_modif.evento.nombre, "mensaje": "Reserva actualizada con éxito."})
 
-    @csrf_exempt
-    def eliminar_reserva(request, id):
+@csrf_exempt
+def eliminar_reserva(request, id):
 
-        """
-           Vista para cancelar una reserva existente.
+    """
+        Vista para cancelar una reserva existente.
 
-           Permite a un participante cancelar su reserva especificando el ID de la reserva.
+        Permite a un participante cancelar su reserva especificando el ID de la reserva.
 
-           Parámetros de la solicitud (URL):
-           - tipo_usuario: Tipo de usuario que realiza la solicitud (debe ser 'participante').
+        Parámetros de la solicitud (URL):
+        - tipo_usuario: Tipo de usuario que realiza la solicitud (debe ser 'participante').
 
-           Respuesta:
-           - Si la reserva se elimina correctamente, devuelve el mensaje de éxito.
-           - Si no se encuentra la reserva o el tipo de usuario es incorrecto, devuelve un error.
-           """
-
-        tipo_usuario = request.GET.get("tipo_usuario")
-        if request.method == "DELETE" and tipo_usuario == "participante":
-            try:
-                reserva_eliminar = Reserva.objects.get(id=id)
-                info_reserva = {
-                    "id": reserva_eliminar.id,
-                    "evento": reserva_eliminar.evento.nombre
-                }
-                reserva_eliminar.delete()
-                return JsonResponse({"mensaje": "Evento eliminado con éxito.", "info_reserva": info_reserva})
-            except Reserva.DoesNotExist:
-                return JsonResponse({"mensaje": "¡Error! No existe el id de la reserva que se desea eliminar."},
-                                    status=404)
+        Respuesta:
+        - Si la reserva se elimina correctamente, devuelve el mensaje de éxito.
+        - Si no se encuentra la reserva o el tipo de usuario es incorrecto, devuelve un error.
+    """
+    tipo_usuario = request.GET.get("tipo_usuario")
+    if request.method == "DELETE" and tipo_usuario == "participante":
+        try:
+            reserva_eliminar = Reserva.objects.get(id=id)
+            info_reserva = {
+                "id": reserva_eliminar.id,
+                "evento": reserva_eliminar.evento.nombre
+             }
+            reserva_eliminar.delete()
+            return JsonResponse({"mensaje": "Evento eliminado con éxito.", "info_reserva": info_reserva})
+        except Reserva.DoesNotExist:
+            return JsonResponse({"mensaje": "¡Error! No existe el id de la reserva que se desea eliminar."},status=404)
         else:
-            return JsonResponse(
-                {"mensaje": "¡Error! El tipo de usuario no es participante. No podrá eliminar reservas."}, status=403)
+            return JsonResponse({"mensaje": "¡Error! El tipo de usuario no es participante. No podrá eliminar reservas."}, status=403)
+
+@csrf_exempt
+def listar_comentarios(request, id):
+
+    """
+       Vista para listar los comentarios asociados a un evento.
+
+       Permite listar los comentarios que los usuarios han realizado en un evento especificado por su ID.
+
+       Parámetros de la solicitud (URL):
+       - id: ID del evento (obligatorio).
+
+       Respuesta:
+       - Si existen comentarios para el evento, devuelve una lista de comentarios en formato JSON.
+       - Si no se encuentran comentarios o el evento no existe, devuelve un error con el mensaje correspondiente.
+
+       Respuesta de error:
+       - Si el evento no existe, se devuelve un error con código de estado 404 (No encontrado).
+       - Si no hay comentarios asociados al evento, se devuelve un error con código de estado 404 (No encontrado).
+       """
+    try:
+        # Verificar si el evento con el ID proporcionado existe
+        objeto_evento = Evento.objects.get(id=id)
+        # Consultar los comentarios asociados a ese evento
+        consulta_comentarios = Comentario.objects.select_related('evento').filter(evento=objeto_evento)
+        # Formatear los comentarios en una lista
+        lista_comentarios = [{"id": sql_comentario.id,
+                        "texto": sql_comentario.texto,
+                        "usuario": sql_comentario.usuario.username,
+                        "fecha": sql_comentario.fecha,
+                        "evento": objeto_evento.nombre}
+                        for sql_comentario in consulta_comentarios]
+    # Si no hay comentarios para el evento
+        if len(lista_comentarios) == 0:
+            return JsonResponse({"mensaje": "No hay comentarios asociados al evento especificado."}, status = 404)
+        else:
+            return JsonResponse(lista_comentarios, safe=False)
+    # Si el evento no existe
+    except Evento.DoesNotExist:
+        return JsonResponse({"mensaje": "¡Error! El id del evento deseada para su listado es incorrecto."}, status = 404)
 
