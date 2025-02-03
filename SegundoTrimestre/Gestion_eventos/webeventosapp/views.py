@@ -6,6 +6,7 @@ from django.core.paginator import Paginator
 from datetime import datetime
 import json
 
+@require_http_methods(["GET"])
 def listar_eventos(request):
 
     """
@@ -75,6 +76,7 @@ def listar_eventos(request):
 
     return JsonResponse(data, safe=False)
 
+@require_http_methods(["POST"])
 @csrf_exempt
 def crear_evento(request):
     """
@@ -127,6 +129,7 @@ def crear_evento(request):
     else :
         return JsonResponse({"mensaje":"El tipo de usuario no es organizador. No se puede efectuar la creación del evento."}, status=403)
 
+@require_http_methods(["PUT","PATCH"])
 @csrf_exempt
 def actualizar_evento(request, id):
     """
@@ -189,6 +192,7 @@ def actualizar_evento(request, id):
             return JsonResponse({"mensaje": "¡Error! Solo un organizador puede modificar los eventos."}, status=403)
 
 
+@require_http_methods(["DELETE"])
 @csrf_exempt
 def eliminar_evento(request, id):
     if request.method == "DELETE":
@@ -205,6 +209,7 @@ def eliminar_evento(request, id):
         else:
             return JsonResponse({"mensaje": "No se permite la acción de borrado sobre eventos a usuarios que no son organizadores."},status=403)
 
+@require_http_methods(["DELETE"])
 @csrf_exempt
 def eliminar_reserva(request, id):
 
@@ -248,7 +253,7 @@ def eliminar_reserva(request, id):
         # Si el tipo de usuario no es 'participante', devolver un error con código 403
         return JsonResponse({"mensaje": "¡Error! El tipo de usuario no es de tipo participante. No podrá eliminar reservas."}, status=403)
 
-
+@require_http_methods(["GET"])
 def listar_reservas(request):
 
     """
@@ -304,6 +309,7 @@ def listar_reservas(request):
 
     return JsonResponse(data_reservas, safe=False)
 
+@require_http_methods(["POST"])
 @csrf_exempt
 def crear_reserva(request):
 
@@ -347,6 +353,7 @@ def crear_reserva(request):
             return JsonResponse({ "mensaje": "El nombre del evento introducido no se asocia con ninguno que esté guardado en nuestra base de datos."}, status = 404)
 
 
+@require_http_methods(["PUT","PATCH"])
 @csrf_exempt
 def actualizar_reserva(request, id):
 
@@ -397,48 +404,7 @@ def actualizar_reserva(request, id):
             return JsonResponse({"mensaje": "¡Error! No se pudo efectuar la modificación debido a que el nombre del evento introducido no está registrado."}, status = 404)
 
 
-@csrf_exempt
-def listar_comentarios(request, id):
-    """
-    Vista para listar los comentarios asociados a un evento.
-
-    Permite listar los comentarios que los usuarios han realizado en un evento especificado por su ID.
-    """
-    try:
-        # Verificar si el evento con el ID proporcionado existe
-        objeto_evento = Evento.objects.get(id=id)
-
-        # Consultar los comentarios asociados a ese evento utilizando select_related para optimizar la consulta
-        consulta_comentarios = Comentario.objects.select_related('evento').filter(evento=objeto_evento)
-
-        # Formatear los comentarios en una lista con detalles relevantes
-        lista_comentarios = [
-            {
-                "id": sql_comentario.id,  # Identificador único del comentario
-                "texto": sql_comentario.texto,  # Contenido del comentario
-                "usuario": sql_comentario.usuario.username,  # Nombre de usuario del autor del comentario
-                "fecha": sql_comentario.fecha,  # Fecha en que se realizó el comentario
-                "evento": objeto_evento.nombre  # Nombre del evento asociado al comentario
-            }
-            for sql_comentario in consulta_comentarios
-        ]
-
-        # Si no hay comentarios para el evento, devolver un mensaje de error
-        if len(lista_comentarios) == 0:
-            return JsonResponse(
-                {"mensaje": "No hay comentarios asociados al evento especificado."},
-                status=404
-            )
-        else:
-            return JsonResponse(lista_comentarios, safe=False)
-
-    except Evento.DoesNotExist:
-        # Manejo de error en caso de que el evento no exista en la base de datos
-        return JsonResponse(
-            {"mensaje": "¡Error! El ID del evento especificado es incorrecto."},status=404)
-
-
-
+@require_http_methods(["GET"])
 @csrf_exempt
 def listar_comentarios(request, id):
 
@@ -479,6 +445,7 @@ def listar_comentarios(request, id):
     except Evento.DoesNotExist:
         return JsonResponse({"mensaje": "¡Error! El id del evento deseada para su listado es incorrecto."}, status = 404)
 
+@require_http_methods(["POST"])
 @csrf_exempt
 def crear_comentario(request):
 
@@ -575,7 +542,7 @@ def comprobar_email (email_usuario):
        """
     return UsuarioPersonalizado.objects.filter(email = email_usuario).exists()
 
-
+@require_http_methods(["POST"])
 def login(request):
 
     """
@@ -611,7 +578,7 @@ def login(request):
             # Si el nombre de usuario es incorrecto
             return  JsonResponse({"usuario":nombre_usuario, "mensaje":"El username es incorrecto. No ha sido posible iniciar sesión."}, status = 401)
 
-
+@require_http_methods(["POST"])
 @csrf_exempt
 def register(request):
 
