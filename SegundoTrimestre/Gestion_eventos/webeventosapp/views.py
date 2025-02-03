@@ -364,6 +364,7 @@ def actualizar_reserva(request, id):
      Respuesta:
      - Si la reserva se actualiza correctamente, devuelve el ID y el nombre del evento.
      - Si no se encuentra la reserva, el usuario o el evento, devuelve un error.
+     - Si el usuario que efectúa la actualización de la reserva no es de tipo organizador, se mostrará mensaje de error.
      """
 
     if request.method in ["PUT","PATCH"]:
