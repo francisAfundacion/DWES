@@ -290,11 +290,8 @@ def listar_reservas(request):
 
     nombre_usuario = request.GET.get("usuario")
 
-    try:
-        # Obtener el usuario por nombre (ignorando mayúsculas/minúsculas)
-        objeto_usuario = UsuarioPersonalizado.objects.get(username__iexact=nombre_usuario)
-    except ObjectDoesNotExist:
-        return JsonResponse({"mensaje": "El usuario no existe."}, status=404)
+    # Obtener el usuario por nombre (ignorando mayúsculas/minúsculas)
+    objeto_usuario = UsuarioPersonalizado.objects.get(username__iexact=nombre_usuario)
 
     # Obtener todas las reservas del usuario
     reservas_usuario = Reserva.objects.select_related('usuario').filter(usuario=objeto_usuario)
@@ -546,6 +543,7 @@ def comprobar_email (email_usuario):
     return UsuarioPersonalizado.objects.filter(email = email_usuario).exists()
 
 @require_http_methods(["POST"])
+@csrf_exempt
 def login(request):
 
     """
