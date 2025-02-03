@@ -196,3 +196,49 @@ def crear_reserva(request):
         # Si el evento no existe
         except Evento.DoesNotExist:
             return JsonResponse({ "mensaje": "El nombre del evento introducido no se asocia con ninguno que esté guardado en nuestra base de datos."}, status = 404)
+
+@csrf_exempt
+def actualizar_reserva(request, id):
+
+    """
+     Vista para actualizar una reserva existente.
+
+     Permite a un organizador actualizar los detalles de una reserva, como el estado de la reserva y el número de entradas.
+
+     Parámetros del cuerpo de la solicitud (JSON):
+     - estado: Nuevo estado de la reserva.
+     - entradas_reservadas: Nuevo número de entradas reservadas.
+     - usuario: Nombre del usuario que realizó la reserva.
+     - evento: Nombre del evento para el cual se hizo la reserva.
+
+     Respuesta:
+     - Si la reserva se actualiza correctamente, devuelve el ID y el nombre del evento.
+     - Si no se encuentra la reserva, el usuario o el evento, devuelve un error.
+     """
+
+    if request.method in ["PUT","PATCH"]:
+        campos_modif_reserva = json.loads(request.body)
+        try:
+            # Verificar si la reserva con el id especificado existe
+            reserva_modif = Reserva.objects.get(id = id)
+        except Reserva.DoesNotExist:
+            return JsonResponse({ "mensaje": "¡Error! No existe el id de la reserva que se desea modificar."},status = 404)
+
+        reserva_modif.estado = campos_modif_reserva.get("estado", reserva_modif.estado)
+        reserva_modif.entradas_reservadas = campos_modif_reserva.get("entradas_reservadas", reserva_modif.entradas_reservadas)
+        nombre_usuario = campos_modif_reserva.get("usuario", reserva_modif.usuario.username)
+        nombre_evento = campos_modif_reserva.get("evento", reserva_modif.evento.nombre)
+        try:
+            # Verificar si el usuario existe
+            objeto_usuario = UsuarioPersonalizado.objects.get(username__iexact = nombre_usuario)
+        except UsuarioPersonalizado.DoesNotExist:
+            return  JsonResponse({"mensaje": "¡Error! No se pudo efectuar la modificación debido a que el nombre de usuario introducido no está registrado."}, status = 404)
+        try:
+            # Verificar si el evento existe
+            objeto_evento = Evento.objects.get(nombre__iexact = nombre_evento)
+        except Evento.DoesNotExist:
+            return JsonResponse({"mensaje": "¡Error! No se pudo efectuar la modificación debido a que el nombre del evento introducido no está registrado."}, status = 404)
+        reserva_modif.usuario = objeto_usuario
+        reserva_modif.evento = objeto_evento
+        reserva_modif.save()
+        return JsonResponse({"id": reserva_modif.id, "evento": reserva_modif.evento.nombre, "mensaje": "Reserva actualizada con éxito."})
