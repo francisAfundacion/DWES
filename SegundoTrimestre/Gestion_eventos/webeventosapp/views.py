@@ -1,40 +1,59 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from .models import Evento, UsuarioPersonalizado, Reserva
+from .models import Evento, UsuarioPersonalizado, Reserva, Comentario
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
 from datetime import datetime
 import json
 
-# Create your views here.
-#CRUD de eventos
-
 def listar_eventos(request):
-    ##limite = int(request)
-    #eventos = Evento.objects.all()
-    query_param_nombre = request.GET.get("nombre","")
-    query_param_fecha = request.GET.get("fecha","")
-    orden = request.GET.get("orden", "fecha")
-    limite_pag = int(request.GET.get("limite", 5))
-    n_pagina = int(request.GET.get("pagina", 1))
 
+    """
+    Vista para listar eventos con filtros de búsqueda y paginación.
+
+    Permite filtrar eventos por nombre o fecha, ordenar los resultados por un campo específico
+    y paginar los eventos en base a los parámetros recibidos en la URL.
+
+    Parámetros:
+    - nombre (opcional): Filtra los eventos cuyo nombre contenga el texto proporcionado.
+    - fecha (opcional): Filtra los eventos que coincidan exactamente con la fecha proporcionada.
+    - orden (opcional): Define el campo por el cual se ordenarán los eventos (por defecto, 'fecha').
+    - limite (opcional): Define el número de eventos por página (por defecto, 5).
+    - pagina (opcional): Especifica la página de resultados que se desea mostrar (por defecto, 1).
+
+    Respuesta:
+    - Devuelve un JSON con los eventos filtrados, la información de la paginación y el número total de eventos.
+    """
+
+    # Obtener los parámetros de la solicitud GET
+    query_param_nombre = request.GET.get("nombre", "")
+    query_param_fecha = request.GET.get("fecha", "")
+    query_param_orden = request.GET.get("orden", "fecha")
+    query_param_limite_pag = int(request.GET.get("limite", 5))
+    query_param_n_pagina = int(request.GET.get("pagina", 1))
+
+    # Filtrado de eventos según los parámetros recibidos
     if query_param_nombre != "":
-        eventos = Evento.objects.filter(nombre__icontains= query_param_nombre).order_by(orden)
+        eventos = Evento.objects.filter(nombre__icontains=query_param_nombre).order_by(query_param_orden)
     else:
         if query_param_fecha != "":
-            eventos = Evento.objects.filter(fecha__exact = query_param_fecha).order_by(orden)
+            eventos = Evento.objects.filter(fecha__exact=query_param_fecha).order_by(query_param_orden)
         else:
-            eventos = Evento.objects.all().order_by(orden)
+            eventos = Evento.objects.all().order_by(query_param_orden)
 
-    paginator = Paginator(eventos, limite_pag)  # Dividir productos en páginas de tamaño `limite`
+    # Dividir productos en páginas de tamaño `limite`
+    paginator = Paginator(eventos, query_param_limite_pag)
     try:
-        eventos_pagina = paginator.page(n_pagina)  # Obtener los productos de la página actual
+        # Obtener los productos de la página actual
+        eventos_pagina = paginator.page(query_param_n_pagina)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)  # Manejar errores de paginación
 
+    # Formatear los eventos para la respuesta JSON
     lista_json_eventos = []
     for evento in eventos_pagina:
         json_evento = {}
+        json_evento['id'] = evento.id,
         json_evento['nombre'] = evento.nombre
         json_evento['descripcion'] = evento.descripcion
         json_evento['fecha'] = evento.fecha
@@ -44,116 +63,220 @@ def listar_eventos(request):
         json_evento['url_img'] = evento.url_img
         lista_json_eventos.append(json_evento)
 
+    # Respuesta con los eventos paginados y metadatos de la paginación
     data = {
-        "count": paginator.count,
-        "total_pages": paginator.num_pages,
-        "current_page": n_pagina,
-        "next": n_pagina + 1 if eventos_pagina.has_next() else None,
-        "previous": n_pagina -1 if eventos_pagina.has_previous() else None,
-        "results":  lista_json_eventos
+        "count": paginator.count,  # Total de eventos encontrados
+        "total_pages": paginator.num_pages,  # Número total de páginas
+        "current_page": query_param_n_pagina,  # Página actual
+        "next": query_param_n_pagina + 1 if eventos_pagina.has_next() else None,  # Página siguiente si existe
+        "previous": query_param_n_pagina - 1 if eventos_pagina.has_previous() else None,  # Página anterior si existe
+        "results": lista_json_eventos  # Lista de eventos de la página actual
     }
+
     return JsonResponse(data, safe=False)
 
 @csrf_exempt
 def crear_evento(request):
+    """
+    Vista para crear un nuevo evento.
+
+    Esta vista permite a un usuario de tipo 'organizador' crear un evento proporcionando los datos necesarios
+    como nombre, descripción, fecha, hora, etc., y asociarlo a un usuario existente.
+
+    Parámetros del cuerpo de la solicitud (JSON):
+    - tipo_usuario: El tipo de usuario que realiza la solicitud (debe ser 'organizador').
+    - usuario: El nombre de usuario del organizador que está creando el evento.
+    - nombre: El nombre del evento.
+    - descripcion: Una descripción del evento.
+    - fecha: La fecha en la que se llevará a cabo el evento.
+    - hora: La hora en la que comenzará el evento.
+    - max_asistencias: El número máximo de asistentes permitido para el evento.
+    - url_img: URL de la imagen asociada al evento.
+
+    Respuesta:
+    - Si el usuario es válido y el evento se crea correctamente, devuelve los detalles del evento creado.
+    - Si el usuario no existe, devuelve un error indicando que el usuario no se encuentra en la base de datos.
+    - Si el tipo de usuario no es 'organizador', devuelve un error con código de estado 403 (Prohibido).
+    """
+
     diccionario_nuevo_evento = json.loads(request.body)
-    print(diccionario_nuevo_evento)
-    ##query_param_organizador = request.POST.get("tipo_usuario", "")
     tipo_usuario = diccionario_nuevo_evento['tipo_usuario']
-    print("LLEGO A VISUALIZAR TIPO_USUARIO")
-    print(tipo_usuario)
+
     if request.method == "POST" and tipo_usuario == "organizador":
         nombre_usuario_post = diccionario_nuevo_evento["usuario"]
-        print(nombre_usuario_post)
-        #consulta_usuario_post = UsuarioPersonalizado.objects.filter(username = nombre_usuario_post), me da query set y no una instancia del modelo
-        consulta_usuario_post = UsuarioPersonalizado.objects.get(username = nombre_usuario_post)
-        print("VISUALIZO CONSULTA USUARIO")
-        print(consulta_usuario_post)
-        Evento.objects.create (
-        nombre =diccionario_nuevo_evento["nombre"],
-        descripcion = diccionario_nuevo_evento["descripcion"],
-        fecha = diccionario_nuevo_evento["fecha"],
-        hora = diccionario_nuevo_evento["hora"],
-        max_asistencias = diccionario_nuevo_evento["max_asistencias"],
-        usuario = consulta_usuario_post,
-        url_img = diccionario_nuevo_evento["url_img"]
-        )
-    return JsonResponse({"nombre": diccionario_nuevo_evento["nombre"], "mensaje": "Evento guardado correctamente."})
+        try:
+            # Obtener el usuario asociado al evento
+            consulta_usuario_post = UsuarioPersonalizado.objects.get(username__iexact=nombre_usuario_post)
+            # Crear un nuevo evento con los datos proporcionados
+            nuevo_evento = Evento.objects.create(
+                nombre=diccionario_nuevo_evento["nombre"],
+                descripcion=diccionario_nuevo_evento["descripcion"],
+                fecha=diccionario_nuevo_evento["fecha"],
+                hora=diccionario_nuevo_evento["hora"],
+                max_asistencias=diccionario_nuevo_evento["max_asistencias"],
+                usuario=consulta_usuario_post,
+                url_img=diccionario_nuevo_evento["url_img"]
+            )
+
+            # Responder con los detalles del evento creado
+            return JsonResponse({"id": nuevo_evento.id, "nombre": nuevo_evento.nombre, "mensaje": "Evento guardado correctamente."},status=201)
+
+        except UsuarioPersonalizado.DoesNotExist:
+            # Si no existe el usuario asociado al evento, devolver un error 404
+            return JsonResponse({"mensaje": "No existe el usuario asociado al evento que se desea crear en nuestra base de datos."},status=404)
+    else :
+        return JsonResponse({"mensaje":"El tipo de usuario no es organizador. No se puede efectuar la creación del evento."}, status=403)
 
 @csrf_exempt
 def actualizar_evento(request, id):
-    if request.method  in ["PUT", "PATCH"]:
-        print(id)
-        print (request.method)
+    """
+    Vista para actualizar los detalles de un evento existente.
+
+    Permite a un usuario de tipo 'organizador' modificar los atributos de un evento, como nombre, descripción,
+    fecha, hora, número máximo de asistentes y la imagen asociada.
+
+    Parámetros del cuerpo de la solicitud (JSON):
+    - tipo_usuario: El tipo de usuario que realiza la solicitud (debe ser 'organizador').
+    - id: El ID del evento a actualizar.
+    - nombre: Nuevo nombre del evento (opcional).
+    - descripcion: Nueva descripción del evento (opcional).
+    - fecha: Nueva fecha del evento (opcional).
+    - hora: Nueva hora del evento (opcional).
+    - max_asistencias: Nuevo número máximo de asistentes (opcional).
+    - url_img: Nueva URL de la imagen asociada al evento (opcional).
+
+    Respuesta:
+    - Si el evento y el usuario asociado existen, se actualizan los detalles y se devuelve el evento actualizado.
+    - Si el evento no existe, se devuelve un error con código de estado 404 (No encontrado).
+    - Si el usuario no existe en el sistema, se devuelve un error con código de estado 404 (No encontrado).
+    - Si el tipo de usuario no es 'organizador', no se actualiza el evento y se devuelve un error con código de estado 403 (Prohibido).
+    """
+
+    if request.method in ["PUT", "PATCH"]:
+        # Cargar los datos del cuerpo de la solicitud
         campos_modif_evento = json.loads(request.body)
-        print(campos_modif_evento)
         tipo_usuario = campos_modif_evento["tipo_usuario"]
-        print(tipo_usuario)
+
+        # Verificar que el usuario es de tipo 'organizador'
         if tipo_usuario == "organizador":
-            nombre_usuario = campos_modif_evento.get("usuario", "")
-            print(nombre_usuario)
-            evento = Evento.objects.get(id = id)
-            evento.nombre = campos_modif_evento.get("nombre", evento.nombre)
-            evento.descripcion = campos_modif_evento.get("descripcion", evento.descripcion)
-            evento.fecha =  campos_modif_evento.get("fecha", evento.fecha)
-            evento.hora = campos_modif_evento.get("hora", evento.hora)
-            evento.max_asistencias = campos_modif_evento.get("max_asistencias", evento.max_asistencias)
-            if nombre_usuario == "":
+            try:
+                # Obtener el evento a actualizar mediante su ID
+                evento = Evento.objects.get(id=id)
+                # Actualizar los atributos del evento
+                evento.nombre = campos_modif_evento.get("nombre", evento.nombre)
+                evento.descripcion = campos_modif_evento.get("descripcion", evento.descripcion)
+                evento.fecha = campos_modif_evento.get("fecha", evento.fecha)
+                evento.hora = campos_modif_evento.get("hora", evento.hora)
+                evento.max_asistencias = campos_modif_evento.get("max_asistencias", evento.max_asistencias)
+                evento.url_img = campos_modif_evento.get("url_img", evento.url_img)
+
+                # Obtener el usuario asociado al evento (se verifica que exista)
+                nombre_usuario = campos_modif_evento.get("usuario", evento.usuario.username)
                 consulta_usuario = UsuarioPersonalizado.objects.get(username=nombre_usuario)
-                print(consulta_usuario)
-                evento.usuario = campos_modif_evento.get("usuario",consulta_usuario)
-            evento.url_img = campos_modif_evento.get("url_img",evento.url_img)
-            evento.save()
-    return JsonResponse({"mensaje": "Producto actualizado"})
+                evento.usuario = consulta_usuario
+
+                # Guardar los cambios en el evento
+                evento.save()
+
+                # Responder con el evento actualizado
+                return JsonResponse({"id": evento.id, "nombre": evento.nombre, "mensaje": "Evento actualizado."})
+                # Si el usuario no existe, devolver un error 404
+            except Evento.DoesNotExist:
+                # Si el evento no existe, devolver un error 404
+                return JsonResponse({"mensaje": "No hay ningún evento identificado por el id deseado en nuestra base de datos."}, status=404)
+        else:
+            # Si el tipo de usuario no es 'organizador', devolver un error 403
+            return JsonResponse({"mensaje": "¡Error! Solo un organizador puede modificar los eventos."}, status=403)
+
 
 @csrf_exempt
 def eliminar_evento(request, id):
-    print(id)
-    data = json.loads(request.body)
-    print(data)
-    tipo_usuario = data["tipo_usuario"]
-    print("VOY A IMPRIMIR TIPOUSUARIO")
-    print(tipo_usuario)
-    if tipo_usuario  == "organizador" and request == "DELETE":
-        evento_eliminar = Evento.objects.get(id = id)
-        evento_eliminar.delete()
-    return JsonResponse({"mensaje": "Producto eliiminado"})
+    if request.method == "DELETE":
+        data = json.loads(request.body)
+        tipo_usuario = data.get("tipo_usuario", "")
+        if tipo_usuario == "organizador" and request.method == "DELETE":
+            try:
+                evento_eliminar = Evento.objects.get(id=id)
+                evento_eliminar.delete()
+                return JsonResponse({"id": id, "evento": evento_eliminar.nombre,"mensaje": "Evento eliminado con éxito."})
+            except Evento.DoesNotExist:
+                return JsonResponse({"mensaje": "No existe un evento con el id especificado en nuestra base de datos."},
+                                    status=404)
+        else:
+            return JsonResponse({"mensaje": "No se permite la acción de borrado sobre eventos a usuarios que no son organizadores."},status=403)
+
+@csrf_exempt
+def eliminar_reserva(request, id):
+
+    """
+    Vista para cancelar una reserva existente.
+
+    Permite a un participante cancelar su reserva especificando el ID de la reserva.
+
+    Parámetros de la solicitud (URL):
+    - tipo_usuario: Tipo de usuario que realiza la solicitud (debe ser 'participante').
+
+    Respuesta:
+    - Si la reserva se elimina correctamente, devuelve un mensaje de éxito con los detalles de la reserva eliminada.
+    - Si no se encuentra la reserva, devuelve un error con código 404 (No encontrado).
+    - Si el tipo de usuario no es 'participante', devuelve un error con código 403 (Prohibido).
+
+    Respuesta de error:
+    - Si el tipo de usuario no es 'participante', se devuelve un error con código de estado 403.
+    - Si la reserva con el ID especificado no existe, se devuelve un error con código de estado 404.
+    """
+
+    tipo_usuario = request.GET.get("tipo_usuario")
+    # Verificar si el tipo de usuario es 'participante' y si la solicitud es de tipo DELETE
+    if request.method == "DELETE" and tipo_usuario == "participante":
+        try:
+            # Verificar si la reserva con el ID proporcionado existe
+            reserva_eliminar = Reserva.objects.get(id=id)
+            # Obtener información de la reserva que será eliminada
+            info_reserva = {
+                "id": reserva_eliminar.id,
+                "evento": reserva_eliminar.evento.nombre
+            }
+            # Eliminar la reserva
+            reserva_eliminar.delete()
+            # Responder con mensaje de éxito
+            return JsonResponse({"mensaje": "Producto eliminado con éxito.", "info_reserva": info_reserva})
+        except Reserva.DoesNotExist:
+            # Si la reserva no existe, devolver un error con código 404
+            return JsonResponse({"mensaje": "¡Error! No existe el id de la reserva que se desea eliminar."}, status=404)
+    else:
+        # Si el tipo de usuario no es 'participante', devolver un error con código 403
+        return JsonResponse({"mensaje": "¡Error! El tipo de usuario no es de tipo participante. No podrá eliminar reservas."}, status=403)
 
 
-#reservas
 def listar_reservas(request):
-    diccionario_usuario = json.loads(request.body)
-    autenticado = diccionario_usuario.get("autenticado",False)
-    if autenticado:
-        print(diccionario_usuario)
-        print(diccionario_usuario["usuario"])
-        objeto_usuario = UsuarioPersonalizado.objects.get(username = diccionario_usuario["usuario"])
-        print(objeto_usuario)
-        print("visualizo objeto evento")
-        print(objeto_usuario.tipo)
-        #objeto_evento = Evento.objects.filter(usuario = objeto_usuario)
-        #objeto_evento = Evento.objects.select_related('usuario').filter(usuario = objeto_usuario)
-        #print(objeto_evento)
-        lista_diccionario_reservas = []
-        #consulta_reservas = Reserva.objects.filter(usuario = objeto_usuario)
-        consulta_reservas = Reserva.objects.select_related('usuario').filter(usuario = objeto_usuario)
-        print("visual reservas")
-        print(consulta_reservas)
-        #for
-        print("antes del bucle for")
-        for sql_reserva in consulta_reservas:
-            print("entro bucle llenado lista reservas")
-            diccionario_reserva = {}
-            diccionario_reserva["estado"] = sql_reserva.estado
-            diccionario_reserva["entradas_reservadas"] = sql_reserva.entradas_reservadas
-            diccionario_reserva["usuario"] = objeto_usuario.username
-            diccionario_reserva["evento"] = sql_reserva.evento.nombre
-            print("diccionario_reserva")
-            print(diccionario_reserva)
-            lista_diccionario_reservas.append(diccionario_reserva)
-            print("LISTA DESPUES DE ESTAR LLENA")
-            print(lista_diccionario_reservas)
-    return JsonResponse(lista_diccionario_reservas, safe=False)
+
+    """
+      Vista para listar las reservas de un usuario.
+
+      Esta vista permite obtener todas las reservas realizadas por un usuario, filtradas por su nombre de usuario.
+
+      Parámetros del cuerpo de la solicitud (JSON):
+      - usuario: El nombre de usuario para el cual se desean obtener las reservas.
+
+      Respuesta:
+      - Devuelve una lista con las reservas del usuario, incluyendo detalles del evento asociado y el estado de la reserva.
+      - Si el usuario no existe, devuelve un error.
+      """
+    autenticado = request.GET.get("autenticado", "false").lower() == "true"
+    print(autenticado)
+    if not autenticado:
+        return JsonResponse({"mensaje": "El usuario al no estar autenticado, no podrá listar los comentarios."}, status=403)
+    nombre_usuario = request.GET.get("usuario")
+    # Obtener el usuario por nombre
+    objeto_usuario = UsuarioPersonalizado.objects.get(username__iexact = nombre_usuario)
+    reservas_usuario = Reserva.objects.select_related('usuario').filter(usuario = objeto_usuario)
+    data_reservas = [{"id": sql_reserva.id, "estado": sql_reserva.estado,
+                    "usuario": nombre_usuario,
+                    "evento": sql_reserva.evento.nombre,
+                    "entradas_reservadas": sql_reserva.entradas_reservadas}
+                    for sql_reserva in reservas_usuario]
+    return JsonResponse(data_reservas, safe = False)
 
 @csrf_exempt
 def crear_reserva(request):
@@ -196,6 +319,7 @@ def crear_reserva(request):
         # Si el evento no existe
         except Evento.DoesNotExist:
             return JsonResponse({ "mensaje": "El nombre del evento introducido no se asocia con ninguno que esté guardado en nuestra base de datos."}, status = 404)
+
 
 @csrf_exempt
 def actualizar_reserva(request, id):
@@ -243,35 +367,39 @@ def actualizar_reserva(request, id):
         reserva_modif.save()
         return JsonResponse({"id": reserva_modif.id, "evento": reserva_modif.evento.nombre, "mensaje": "Reserva actualizada con éxito."})
 
+
 @csrf_exempt
 def eliminar_reserva(request, id):
 
     """
-        Vista para cancelar una reserva existente.
+       Vista para cancelar una reserva existente.
 
-        Permite a un participante cancelar su reserva especificando el ID de la reserva.
+       Permite a un participante cancelar su reserva especificando el ID de la reserva.
 
-        Parámetros de la solicitud (URL):
-        - tipo_usuario: Tipo de usuario que realiza la solicitud (debe ser 'participante').
+       Parámetros de la solicitud (URL):
+       - tipo_usuario: Tipo de usuario que realiza la solicitud (debe ser 'participante').
 
-        Respuesta:
-        - Si la reserva se elimina correctamente, devuelve el mensaje de éxito.
-        - Si no se encuentra la reserva o el tipo de usuario es incorrecto, devuelve un error.
-    """
+       Respuesta:
+       - Si la reserva se elimina correctamente, devuelve el mensaje de éxito.
+       - Si no se encuentra la reserva o el tipo de usuario es incorrecto, devuelve un error.
+       """
+
     tipo_usuario = request.GET.get("tipo_usuario")
     if request.method == "DELETE" and tipo_usuario == "participante":
         try:
-            reserva_eliminar = Reserva.objects.get(id=id)
+            reserva_eliminar = Reserva.objects.get(id = id)
             info_reserva = {
                 "id": reserva_eliminar.id,
                 "evento": reserva_eliminar.evento.nombre
-             }
+            }
             reserva_eliminar.delete()
             return JsonResponse({"mensaje": "Evento eliminado con éxito.", "info_reserva": info_reserva})
         except Reserva.DoesNotExist:
-            return JsonResponse({"mensaje": "¡Error! No existe el id de la reserva que se desea eliminar."},status=404)
-        else:
-            return JsonResponse({"mensaje": "¡Error! El tipo de usuario no es participante. No podrá eliminar reservas."}, status=403)
+            return JsonResponse({"mensaje": "¡Error! No existe el id de la reserva que se desea eliminar."}, status = 404)
+    else:
+        return JsonResponse({"mensaje": "¡Error! El tipo de usuario no es participante. No podrá eliminar reservas."}, status = 403)
+
+
 
 @csrf_exempt
 def listar_comentarios(request, id):
@@ -313,6 +441,7 @@ def listar_comentarios(request, id):
     except Evento.DoesNotExist:
         return JsonResponse({"mensaje": "¡Error! El id del evento deseada para su listado es incorrecto."}, status = 404)
 
+
 @csrf_exempt
 def crear_comentario(request):
 
@@ -340,31 +469,30 @@ def crear_comentario(request):
     if request.method == "POST":
         # Verificación de si el usuario está autenticado
         autenticado = request.GET.get("autenticado", "false").lower() == "true"
-        if not autenticado:
-            return JsonResponse({"mensaje": "No se le permite a usuarios no autenticados crear comentarios."},
-                                status=403)
+        if  not autenticado:
+            return JsonResponse({"mensaje": "No se le permite a usuarios no autenticados crear comentarios."}, status= 403)
         else:
             # Procesar el cuerpo de la solicitud para crear el comentario
             diccionario_comentario = json.loads(request.body)
             nombre_usuario = diccionario_comentario["usuario"]
             # Verificar si el usuario existe en la base de datos
-            objeto_usuario = UsuarioPersonalizado.objects.get(username=nombre_usuario)
+            objeto_usuario = UsuarioPersonalizado.objects.get(username = nombre_usuario)
             try:
                 nombre_evento = diccionario_comentario["evento"]
                 # Verificar si el evento existe en la base de datos
-                objeto_evento = Evento.objects.get(nombre=nombre_evento)
+                objeto_evento = Evento.objects.get(nombre = nombre_evento)
                 # Crear el comentario
                 nuevo_comentario = Comentario.objects.create(
-                    texto=diccionario_comentario["texto"],
-                    fecha=diccionario_comentario["fecha"],
-                    usuario=objeto_usuario,
-                    evento=objeto_evento
+                    texto = diccionario_comentario["texto"],
+                    fecha = diccionario_comentario["fecha"],
+                    usuario =objeto_usuario,
+                    evento = objeto_evento
                 )
-                return JsonResponse({"id": nuevo_comentario.id, "evento": objeto_evento.nombre,
-                                     "mensaje": "El comentario se ha creado correctamente."}, status=201)
+                return JsonResponse({"id": nuevo_comentario.id, "evento": objeto_evento.nombre,"mensaje": "El comentario se ha creado correctamente."}, status = 201)
             except Evento.DoesNotExist:
-                # Error si el evento no existe
-                return JsonResponse({"mensaje": "El evento que se desea asociar en la creación del comentario no existe en nuestra base de datos."},status=404)
+                    # Error si el evento no existe
+                    return  JsonResponse({"mensaje":"El evento que se desea asociar en la creación del comentario no existe en nuestra base de datos."}, status = 404)
+
 
 def comprobar_username(nombre_usuario):
 
@@ -445,6 +573,7 @@ def login(request):
         else:
             # Si el nombre de usuario es incorrecto
             return  JsonResponse({"usuario":nombre_usuario, "mensaje":"El username es incorrecto. No ha sido posible iniciar sesión."}, status = 401)
+
 
 @csrf_exempt
 def register(request):
