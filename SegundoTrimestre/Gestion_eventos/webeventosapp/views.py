@@ -410,3 +410,39 @@ def comprobar_email (email_usuario):
        """
     return UsuarioPersonalizado.objects.filter(email = email_usuario).exists()
 
+@csrf_exempt
+def login(request):
+
+    """
+       Vista para iniciar sesión de un usuario.
+
+       Permite a los usuarios iniciar sesión proporcionando su nombre de usuario y contraseña.
+
+       Parámetros del cuerpo de la solicitud (JSON):
+       - username: El nombre de usuario del usuario (obligatorio).
+       - password: La contraseña del usuario (obligatoria).
+
+       Respuesta:
+       - Si el nombre de usuario y la contraseña son correctos, se devuelve un mensaje de éxito indicando que el usuario ha iniciado sesión con éxito.
+       - Si el nombre de usuario no existe o la contraseña es incorrecta, se devuelve un error de autenticación indicando el problema.
+
+       Respuesta de error:
+       - Si las credenciales son incorrectas (ya sea el nombre de usuario o la contraseña), se devuelve un error con código de estado 401 (No autorizado) y un mensaje de error correspondiente.
+       """
+    if request.method == "POST":
+        diccionario_usuario = json.loads(request.body)
+        nombre_usuario =  diccionario_usuario["username"]
+        pass_usuario =  diccionario_usuario["password"]
+
+        # Se obtienen los datos de la solicitud
+        if comprobar_username(nombre_usuario) :
+            # Verificar si la contraseña es correcta
+            if comprobar_contrasena(pass_usuario):
+                return JsonResponse({"usuario":nombre_usuario,"mensaje": "El usuario se ha logueado con éxito en el sistema."})
+            else:
+                # Si la contraseña es incorrecta
+                return JsonResponse({"usuario":nombre_usuario, "mensaje": "La contraseña es incorrecta.No ha sido posible iniciar sesión."}, status = 401)
+        else:
+            # Si el nombre de usuario es incorrecto
+            return  JsonResponse({"usuario":nombre_usuario, "mensaje":"El username es incorrecto. No ha sido posible iniciar sesión."}, status = 401)
+
