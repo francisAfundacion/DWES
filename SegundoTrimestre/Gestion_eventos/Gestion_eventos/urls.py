@@ -32,4 +32,5 @@ urlpatterns = [
     path('crear_comentario', views.crear_comentario),
     path('login', views.login),
     path('register', views.register),
+    path('api-token-auth/', ObtainAuthToken.as_view(), name='api_token_auth'),
 ]
