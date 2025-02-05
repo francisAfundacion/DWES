@@ -7,7 +7,12 @@ from django.core.paginator import Paginator
 from datetime import datetime
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import BasePermission
 import json
+
+class  esOrganizador(BasePermission):
+    def has_permission(self, request, view):
+        return request.user and request.user.tipo == "organizador"
 
 
 class listar_eventosAPIView(APIView):
@@ -76,12 +81,10 @@ class listar_eventosAPIView(APIView):
             "previous": query_param_n_pagina - 1 if eventos_pagina.has_previous() else None,  # Página anterior si existe
             "results": lista_json_eventos  # Lista de eventos de la página actual
         }
+        return Response(data, safe=False)
 
-        return JsonResponse(data, safe=False)
-
-    @require_http_methods(["POST"])
-    @csrf_exempt
-    def crear_evento(request):
+class crear_eventoAPIView(APIView):
+    def post (self, request):
         """
         Vista para crear un nuevo evento.
 
@@ -104,10 +107,11 @@ class listar_eventosAPIView(APIView):
         - Si el tipo de usuario no es 'organizador', devuelve un error con código de estado 403 (Prohibido).
         """
 
-        diccionario_nuevo_evento = json.loads(request.body)
-        tipo_usuario = diccionario_nuevo_evento['tipo_usuario']
+        diccionario_nuevo_evento = request.data
 
-        if request.method == "POST" and tipo_usuario == "organizador":
+        permission_classes = [esOrganizador]
+
+        if request.method == "POST":
             nombre_usuario_post = diccionario_nuevo_evento["usuario"]
             try:
                 # Obtener el usuario asociado al evento
@@ -124,16 +128,15 @@ class listar_eventosAPIView(APIView):
                 )
 
                 # Responder con los detalles del evento creado
-                return JsonResponse({"id": nuevo_evento.id, "nombre": nuevo_evento.nombre, "mensaje": "Evento guardado correctamente."},status=201)
+                return Response({"id": nuevo_evento.id, "nombre": nuevo_evento.nombre, "mensaje": "Evento guardado correctamente."},status=201)
 
             except UsuarioPersonalizado.DoesNotExist:
                 # Si no existe el usuario asociado al evento, devolver un error 404
-                return JsonResponse({"mensaje": "No existe el usuario asociado al evento que se desea crear en nuestra base de datos."},status=404)
+                return Response({"mensaje": "No existe el usuario asociado al evento que se desea crear en nuestra base de datos."},status=404)
         else :
-            return JsonResponse({"mensaje":"El tipo de usuario no es organizador. No se puede efectuar la creación del evento."}, status=403)
+            return Response({"mensaje":"El tipo de usuario no es organizador. No se puede efectuar la creación del evento."}, status=403)
 
-    @require_http_methods(["PUT","PATCH"])
-    @csrf_exempt
+
     def actualizar_evento(request, id):
         """
         Vista para actualizar los detalles de un evento existente.
