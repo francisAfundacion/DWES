@@ -56,7 +56,7 @@ class listar_eventosAPIView(APIView):
             # Obtener los productos de la página actual
             eventos_pagina = paginator.page(query_param_n_pagina)
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=400)  # Manejar errores de paginación
+            return Response({"error": str(e)}, status=400)  # Manejar errores de paginación
 
         # Formatear los eventos para la respuesta JSON
         lista_json_eventos = []
@@ -81,7 +81,7 @@ class listar_eventosAPIView(APIView):
             "previous": query_param_n_pagina - 1 if eventos_pagina.has_previous() else None,  # Página anterior si existe
             "results": lista_json_eventos  # Lista de eventos de la página actual
         }
-        return Response(data, safe=False)
+        return Response(data)
 
 class crear_eventoAPIView(APIView):
     def post (self, request):
@@ -136,8 +136,12 @@ class crear_eventoAPIView(APIView):
         else :
             return Response({"mensaje":"El tipo de usuario no es organizador. No se puede efectuar la creación del evento."}, status=403)
 
-
-    def actualizar_evento(request, id):
+class actualizar_eventoAPIView(APIView):
+    def put (self, request, id):
+        return self.actualizar_evento(request,id)
+    def patch (self, request, id):
+        return(self.actualizar_evento(request, id))
+    def actualizar_evento(self, request, id):
         """
         Vista para actualizar los detalles de un evento existente.
 
@@ -160,42 +164,39 @@ class crear_eventoAPIView(APIView):
         - Si el usuario no existe en el sistema, se devuelve un error con código de estado 404 (No encontrado).
         - Si el tipo de usuario no es 'organizador', no se actualiza el evento y se devuelve un error con código de estado 403 (Prohibido).
         """
-
         if request.method in ["PUT", "PATCH"]:
             # Cargar los datos del cuerpo de la solicitud
-            campos_modif_evento = json.loads(request.body)
-            tipo_usuario = campos_modif_evento["tipo_usuario"]
+            campos_modif_evento = request.data
+            permission_classes = [esOrganizador]
+            try:
+                # Obtener el evento a actualizar mediante su ID
+                evento = Evento.objects.get(id=id)
+                # Actualizar los atributos del evento
+                evento.nombre = campos_modif_evento.get("nombre", evento.nombre)
+                evento.descripcion = campos_modif_evento.get("descripcion", evento.descripcion)
+                evento.fecha = campos_modif_evento.get("fecha", evento.fecha)
+                evento.hora = campos_modif_evento.get("hora", evento.hora)
+                evento.max_asistencias = campos_modif_evento.get("max_asistencias", evento.max_asistencias)
+                evento.url_img = campos_modif_evento.get("url_img", evento.url_img)
 
-            # Verificar que el usuario es de tipo 'organizador'
-            if tipo_usuario == "organizador":
-                try:
-                    # Obtener el evento a actualizar mediante su ID
-                    evento = Evento.objects.get(id=id)
-                    # Actualizar los atributos del evento
-                    evento.nombre = campos_modif_evento.get("nombre", evento.nombre)
-                    evento.descripcion = campos_modif_evento.get("descripcion", evento.descripcion)
-                    evento.fecha = campos_modif_evento.get("fecha", evento.fecha)
-                    evento.hora = campos_modif_evento.get("hora", evento.hora)
-                    evento.max_asistencias = campos_modif_evento.get("max_asistencias", evento.max_asistencias)
-                    evento.url_img = campos_modif_evento.get("url_img", evento.url_img)
+                # Obtener el usuario asociado al evento (se verifica que exista)
+                nombre_usuario = campos_modif_evento.get("usuario", evento.usuario.username)
+                consulta_usuario = UsuarioPersonalizado.objects.get(username=nombre_usuario)
+                print(consulta_usuario)
+                evento.usuario = consulta_usuario
 
-                    # Obtener el usuario asociado al evento (se verifica que exista)
-                    nombre_usuario = campos_modif_evento.get("usuario", evento.usuario.username)
-                    consulta_usuario = UsuarioPersonalizado.objects.get(username=nombre_usuario)
-                    evento.usuario = consulta_usuario
+                # Guardar los cambios en el evento
+                evento.save()
 
-                    # Guardar los cambios en el evento
-                    evento.save()
-
-                    # Responder con el evento actualizado
-                    return JsonResponse({"id": evento.id, "nombre": evento.nombre, "mensaje": "Evento actualizado."})
-                    # Si el usuario no existe, devolver un error 404
-                except Evento.DoesNotExist:
-                    # Si el evento no existe, devolver un error 404
-                    return JsonResponse({"mensaje": "No hay ningún evento identificado por el id deseado en nuestra base de datos."}, status=404)
-            else:
-                # Si el tipo de usuario no es 'organizador', devolver un error 403
-                return JsonResponse({"mensaje": "¡Error! Solo un organizador puede modificar los eventos."}, status=403)
+                # Responder con el evento actualizado
+                return Response({"id": evento.id, "nombre": evento.nombre, "mensaje": "Evento actualizado."})
+                # Si el usuario no existe, devolver un error 404
+            except Evento.DoesNotExist:
+                # Si el evento no existe, devolver un error 404
+                return Response({"mensaje": "No hay ningún evento identificado por el id deseado en nuestra base de datos."}, status=404)
+        else:
+             # Si el tipo de usuario no es 'organizador', devolver un error 403
+            return Response({"mensaje": "¡Error! Solo un organizador puede modificar los eventos."}, status=403)
 
 
     @require_http_methods(["DELETE"])
