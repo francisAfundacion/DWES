@@ -19,6 +19,7 @@ from webeventosapp.views import listar_eventosAPIView
 from webeventosapp.views import crear_eventoAPIView
 from webeventosapp.views import actualizar_eventoAPIView
 from webeventosapp.views import eliminar_eventoAPIView
+from webeventosapp.views import listar_reservasAPIView
 from django.contrib import admin
 from django.urls import path
 
@@ -30,8 +31,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('actualizar_evento/<int:id>',actualizar_eventoAPIView.as_view()),
     path('eliminar_evento/<int:id>', eliminar_eventoAPIView.as_view()),
-   # path('login', loginAPIView.as_view()),
-    #path('listar_reservas', views.listar_reservas),
+    path('listar_reservas', listar_reservasAPIView.as_view()),
     #path('crear_reserva', views.crear_reserva),
     #path('actualizar_reserva/<int:id>', views.actualizar_reserva),
     #path('eliminar_reserva/<int:id>', views.eliminar_reserva),
