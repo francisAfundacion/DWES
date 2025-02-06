@@ -8,14 +8,24 @@ from datetime import datetime
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import BasePermission
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authtoken.views import ObtainAuthToken
 import json
+
 
 class  esOrganizador(BasePermission):
     def has_permission(self, request, view):
         return request.user and request.user.tipo == "organizador"
 
+class  esParticipante(BasePermission):
+    def has_permission(self, request, view):
+        return request.user and request.user.tipo == "participante"
+
 
 class listar_eventosAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+
     def get(self, request):
 
         """
@@ -84,6 +94,7 @@ class listar_eventosAPIView(APIView):
         return Response(data)
 
 class crear_eventoAPIView(APIView):
+
     def post (self, request):
         """
         Vista para crear un nuevo evento.
@@ -108,8 +119,6 @@ class crear_eventoAPIView(APIView):
         """
 
         diccionario_nuevo_evento = request.data
-
-        permission_classes = [esOrganizador]
 
         if request.method == "POST":
             nombre_usuario_post = diccionario_nuevo_evento["usuario"]
@@ -137,6 +146,8 @@ class crear_eventoAPIView(APIView):
             return Response({"mensaje":"El tipo de usuario no es organizador. No se puede efectuar la creación del evento."}, status=403)
 
 class actualizar_eventoAPIView(APIView):
+    permission_classes = [esOrganizador]
+    print (permission_classes)
     def put (self, request, id):
         return self.actualizar_evento(request,id)
     def patch (self, request, id):
@@ -167,7 +178,6 @@ class actualizar_eventoAPIView(APIView):
         if request.method in ["PUT", "PATCH"]:
             # Cargar los datos del cuerpo de la solicitud
             campos_modif_evento = request.data
-            permission_classes = [esOrganizador]
             try:
                 # Obtener el evento a actualizar mediante su ID
                 evento = Evento.objects.get(id=id)
@@ -198,24 +208,18 @@ class actualizar_eventoAPIView(APIView):
              # Si el tipo de usuario no es 'organizador', devolver un error 403
             return Response({"mensaje": "¡Error! Solo un organizador puede modificar los eventos."}, status=403)
 
+class eliminar_eventoAPIView(APIView):
+    permission_classes = [esOrganizador]
 
-    @require_http_methods(["DELETE"])
-    @csrf_exempt
-    def eliminar_evento(request, id):
-        if request.method == "DELETE":
-            data = json.loads(request.body)
-            tipo_usuario = data.get("tipo_usuario", "")
-            if tipo_usuario == "organizador" and request.method == "DELETE":
+    def delete (self, request, id):
+            if  request.method == "DELETE":
                 try:
                     evento_eliminar = Evento.objects.get(id=id)
                     evento_eliminar.delete()
-                    return JsonResponse({"id": id, "evento": evento_eliminar.nombre,"mensaje": "Evento eliminado con éxito."})
+                    return Response({"id": id, "evento": evento_eliminar.nombre,"mensaje": "Evento eliminado con éxito."})
                 except Evento.DoesNotExist:
-                    return JsonResponse({"mensaje": "No existe un evento con el id especificado en nuestra base de datos."},
+                    return Response({"mensaje": "No existe un evento con el id especificado en nuestra base de datos."},
                                         status=404)
-            else:
-                return JsonResponse({"mensaje": "No se permite la acción de borrado sobre eventos a usuarios que no son organizadores."},status=403)
-
     @require_http_methods(["DELETE"])
     @csrf_exempt
     def eliminar_reserva(request, id):
@@ -547,42 +551,6 @@ class actualizar_eventoAPIView(APIView):
            - False si el email no existe.
            """
         return UsuarioPersonalizado.objects.filter(email = email_usuario).exists()
-
-    @require_http_methods(["POST"])
-    def login(request):
-
-        """
-           Vista para iniciar sesión de un usuario.
-
-           Permite a los usuarios iniciar sesión proporcionando su nombre de usuario y contraseña.
-
-           Parámetros del cuerpo de la solicitud (JSON):
-           - username: El nombre de usuario del usuario (obligatorio).
-           - password: La contraseña del usuario (obligatoria).
-
-           Respuesta:
-           - Si el nombre de usuario y la contraseña son correctos, se devuelve un mensaje de éxito indicando que el usuario ha iniciado sesión con éxito.
-           - Si el nombre de usuario no existe o la contraseña es incorrecta, se devuelve un error de autenticación indicando el problema.
-
-           Respuesta de error:
-           - Si las credenciales son incorrectas (ya sea el nombre de usuario o la contraseña), se devuelve un error con código de estado 401 (No autorizado) y un mensaje de error correspondiente.
-           """
-        if request.method == "POST":
-            diccionario_usuario = json.loads(request.body)
-            nombre_usuario =  diccionario_usuario["username"]
-            pass_usuario =  diccionario_usuario["password"]
-
-            # Se obtienen los datos de la solicitud
-            if comprobar_username(nombre_usuario) :
-                # Verificar si la contraseña es correcta
-                if comprobar_contrasena(pass_usuario):
-                    return JsonResponse({"usuario":nombre_usuario,"mensaje": "El usuario se ha logueado con éxito en el sistema."})
-                else:
-                    # Si la contraseña es incorrecta
-                    return JsonResponse({"usuario":nombre_usuario, "mensaje": "La contraseña es incorrecta.No ha sido posible iniciar sesión."}, status = 401)
-            else:
-                # Si el nombre de usuario es incorrecto
-                return  JsonResponse({"usuario":nombre_usuario, "mensaje":"El username es incorrecto. No ha sido posible iniciar sesión."}, status = 401)
 
     @require_http_methods(["POST"])
     @csrf_exempt
