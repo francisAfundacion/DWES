@@ -24,8 +24,6 @@ class  esParticipante(BasePermission):
 
 class listar_eventosAPIView(APIView):
     permission_classes = [IsAuthenticated]
-
-
     def get(self, request):
 
         """
@@ -220,52 +218,10 @@ class eliminar_eventoAPIView(APIView):
                 except Evento.DoesNotExist:
                     return Response({"mensaje": "No existe un evento con el id especificado en nuestra base de datos."},
                                         status=404)
-    @require_http_methods(["DELETE"])
-    @csrf_exempt
-    def eliminar_reserva(request, id):
 
-        """
-        Vista para cancelar una reserva existente.
-
-        Permite a un participante cancelar su reserva especificando el ID de la reserva.
-
-        Parámetros de la solicitud (URL):
-        - tipo_usuario: Tipo de usuario que realiza la solicitud (debe ser 'participante').
-
-        Respuesta:
-        - Si la reserva se elimina correctamente, devuelve un mensaje de éxito con los detalles de la reserva eliminada.
-        - Si no se encuentra la reserva, devuelve un error con código 404 (No encontrado).
-        - Si el tipo de usuario no es 'participante', devuelve un error con código 403 (Prohibido).
-
-        Respuesta de error:
-        - Si el tipo de usuario no es 'participante', se devuelve un error con código de estado 403.
-        - Si la reserva con el ID especificado no existe, se devuelve un error con código de estado 404.
-        """
-
-        tipo_usuario = request.GET.get("tipo_usuario")
-        # Verificar si el tipo de usuario es 'participante' y si la solicitud es de tipo DELETE
-        if request.method == "DELETE" and tipo_usuario == "participante":
-            try:
-                # Verificar si la reserva con el ID proporcionado existe
-                reserva_eliminar = Reserva.objects.get(id=id)
-                # Obtener información de la reserva que será eliminada
-                info_reserva = {
-                    "id": reserva_eliminar.id,
-                    "evento": reserva_eliminar.evento.nombre
-                }
-                # Eliminar la reserva
-                reserva_eliminar.delete()
-                # Responder con mensaje de éxito
-                return JsonResponse({"mensaje": "Producto eliminado con éxito.", "info_reserva": info_reserva})
-            except Reserva.DoesNotExist:
-                # Si la reserva no existe, devolver un error con código 404
-                return JsonResponse({"mensaje": "¡Error! No existe el id de la reserva que se desea eliminar."}, status=404)
-        else:
-            # Si el tipo de usuario no es 'participante', devolver un error con código 403
-            return JsonResponse({"mensaje": "¡Error! El tipo de usuario no es de tipo participante. No podrá eliminar reservas."}, status=403)
-
-    @require_http_methods(["GET"])
-    def listar_reservas(request):
+class listar_reservasAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
 
         """
         Vista para listar las reservas de un usuario.
@@ -287,16 +243,7 @@ class eliminar_eventoAPIView(APIView):
         - Si el usuario no está autenticado, devuelve un error 403.
         - Si el usuario no existe, devuelve un error 404.
         """
-
-        autenticado = request.GET.get("autenticado", "false").lower() == "true"
-        print(autenticado)
-
-        if not autenticado:
-            return JsonResponse({"mensaje": "El usuario al no estar autenticado, no podrá listar los comentarios."},
-                                status=403)
-
-        nombre_usuario = request.GET.get("usuario")
-
+        nombre_usuario = request.query_params.get("usuario")
         try:
             # Obtener el usuario por nombre (ignorando mayúsculas/minúsculas)
             objeto_usuario = UsuarioPersonalizado.objects.get(username__iexact=nombre_usuario)
@@ -318,7 +265,53 @@ class eliminar_eventoAPIView(APIView):
             for sql_reserva in reservas_usuario
         ]
 
-        return JsonResponse(data_reservas, safe=False)
+        return Response(data_reservas)
+
+    @require_http_methods(["DELETE"])
+    @csrf_exempt
+    def eliminar_reserva(request, id):
+
+        """
+        Vista para cancelar una reserva existente.
+
+        Permite a un participante cancelar su reserva especificando el ID de la reserva.
+
+        Parámetros de la solicitud (URL):
+        - tipo_usuario: Tipo de usuario que realiza la solicitud (debe ser 'participante').
+
+        Respuesta:
+        - Si la reserva se elimina correctamente, devuelve un mensaje de éxito con los detalles de la reserva eliminada.
+        - Si no se encuentra la reserva, devuelve un error con código 404 (No encontrado).
+        - Si el tipo de usuario no es 'participante', devuelve un error con código 403 (Prohibido).
+
+        Respuesta de error:
+        - Si el tipo de usuario no es 'participante', se devuelve un error con código de estado 403.
+        - Si la reserva con el ID especificado no existe, se devuelve un error con código de estado 404.
+        """
+        tipo_usuario = request.GET.get("tipo_usuario")
+        # Verificar si el tipo de usuario es 'participante' y si la solicitud es de tipo DELETE
+        if request.method == "DELETE" and tipo_usuario == "participante":
+            try:
+                # Verificar si la reserva con el ID proporcionado existe
+                reserva_eliminar = Reserva.objects.get(id=id)
+                # Obtener información de la reserva que será eliminada
+                info_reserva = {
+                    "id": reserva_eliminar.id,
+                    "evento": reserva_eliminar.evento.nombre
+                }
+                # Eliminar la reserva
+                reserva_eliminar.delete()
+                # Responder con mensaje de éxito
+                return JsonResponse({"mensaje": "Producto eliminado con éxito.", "info_reserva": info_reserva})
+            except Reserva.DoesNotExist:
+                # Si la reserva no existe, devolver un error con código 404
+                return JsonResponse({"mensaje": "¡Error! No existe el id de la reserva que se desea eliminar."},
+                                    status=404)
+        else:
+            # Si el tipo de usuario no es 'participante', devolver un error con código 403
+            return JsonResponse(
+                {"mensaje": "¡Error! El tipo de usuario no es de tipo participante. No podrá eliminar reservas."},
+                status=403)
 
     @require_http_methods(["POST"])
     @csrf_exempt
