@@ -94,7 +94,7 @@ class listar_eventosAPIView(APIView):
         return Response(data)
 
 class crear_eventoAPIView(APIView):
-
+    permission_classes = [esOrganizador]
     def post (self, request):
         """
         Vista para crear un nuevo evento.
