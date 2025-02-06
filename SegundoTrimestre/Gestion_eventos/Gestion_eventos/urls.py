@@ -29,7 +29,7 @@ urlpatterns = [
     path('crear_evento', crear_eventoAPIView.as_view()),
     path('admin/', admin.site.urls),
     path('actualizar_evento/<int:id>',actualizar_eventoAPIView.as_view()),
-    #path('eliminar_evento/<int:id>', eliminar_eventoAPIView.as_view()),
+    path('eliminar_evento/<int:id>', eliminar_eventoAPIView.as_view()),
    # path('login', loginAPIView.as_view()),
     #path('listar_reservas', views.listar_reservas),
     #path('crear_reserva', views.crear_reserva),
