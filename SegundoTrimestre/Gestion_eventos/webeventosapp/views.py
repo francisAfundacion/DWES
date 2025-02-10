@@ -541,8 +541,24 @@ class listar_comentariosAPIView(APIView):
         except Evento.DoesNotExist:
             return Response({"mensaje": "¡Error! El id del evento deseada para su listado es incorrecto."}, status = 404)
 
+
 class crear_comentarioAPIView(APIView):
     permission_classes = [IsAuthenticated]
+    @swagger_auto_schema(
+        operation_description="Crea un nuevo evento.",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'texto': openapi.Schema(type=openapi.TYPE_STRING, description='Texto asociado al comentario.'),
+                'fecha': openapi.Schema(type=openapi.TYPE_STRING, format="date-time",description='Fecha y hora del evento.'),
+                'usuario': openapi.Schema(type=openapi.TYPE_STRING, description='Nombre del usuario.'),
+                'evento': openapi.Schema(type=openapi.TYPE_STRING, description='Evento al que se le asociará el comentario creado.'),
+            },
+            required=['texto', 'fecha', 'usuario', 'evento']
+        ),
+        responses={201: openapi.Response(description="El comentario se ha creado correctamente."),
+                   404: openapi.Response(description="El evento que se desea asociar en la creación del comentario no existe en nuestra base de datos.")}
+    )
     def post(self, request):
 
         """
