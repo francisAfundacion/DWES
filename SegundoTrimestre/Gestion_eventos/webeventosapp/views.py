@@ -645,6 +645,27 @@ def comprobar_email (email_usuario):
     return UsuarioPersonalizado.objects.filter(email = email_usuario).exists()
 
 class registerAPIView(APIView):
+    @swagger_auto_schema(
+        operation_description="Permite dar de alta a un usuario en el sistema.",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'username': openapi.Schema(type=openapi.TYPE_STRING, description='Nombre del usuario'),
+                'password': openapi.Schema(type=openapi.TYPE_STRING, description='Contraseña del usuario'),
+                'email': openapi.Schema(type=openapi.TYPE_STRING, description='Email del usuario'),
+                'tipo_usuario': openapi.Schema(type=openapi.TYPE_STRING, description='Rol del usuario en el sistema.'),
+                'biografia': openapi.Schema(type=openapi.TYPE_STRING, description='Rol del usuario en el sistema.'),
+            },
+            required=['username', 'password', 'email', 'tipo_usuario']
+        ),
+        responses={201: openapi.Response(description="El usuario ha sido dado de alta con éxito."),
+                   400: openapi.Response(description="Se han dejado campo/s obligatorio/s sin rellenar. Recuerda que el único campo opcional es la biografía."),
+                   400: openapi.Response(description="El tipo de usuario es incorrecto, debería ser organizador o participante."),
+                   400: openapi.Response(description="El email introducido ya está en uso."),
+                   400: openapi.Response(description="El nombre de usuario introducido ya está en uso."),
+                   400: openapi.Response(description="La contraseña introducida ya está en uso.")
+        }
+    )
     def post(self, request):
 
         """
