@@ -269,6 +269,13 @@ class actualizar_eventoAPIView(APIView):
 class eliminar_eventoAPIView(APIView):
     permission_classes = [esOrganizador]
 
+    @swagger_auto_schema(
+        operation_description="Elimina eventos filtrados por título o fecha.",
+        responses={200: openapi.Response(description="Lista de eventos."),
+                   404: openapi.Response(description="No existe un evento con el id especificado en nuestra base de datos")
+                   }
+    )
+
     def delete (self, request, id):
             if  request.method == "DELETE":
                 try:
