@@ -496,6 +496,13 @@ class actualizar_reservaAPIView(APIView):
 
 class listar_comentariosAPIView(APIView):
     permission_classes =  [IsAuthenticated]
+    @swagger_auto_schema(
+        operation_description="Obtener lista de comentarios de un evento.",
+        responses={200: openapi.Response("Lista de comentarios."),
+                   404: openapi.Response("No hay comentarios asociados al evento especificado."),
+                   404: openapi.Response("¡Error! El id del evento deseada para su listado es incorrecto.")
+        },
+    )
     def get(self, request, id):
         """
            Vista para listar los comentarios asociados a un evento.
