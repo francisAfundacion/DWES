@@ -187,7 +187,28 @@ class crear_eventoAPIView(APIView):
 
 class actualizar_eventoAPIView(APIView):
     permission_classes = [esOrganizador]
-    print (permission_classes)
+    @swagger_auto_schema(
+        operation_description="Actualiza totalmente o parcialmente un nuevo evento.",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'nombre': openapi.Schema(type=openapi.TYPE_STRING, description='Nombre del evento'),
+                'descripcion': openapi.Schema(type=openapi.TYPE_STRING, description='Descripción del evento'),
+                'fecha': openapi.Schema(type=openapi.TYPE_STRING, format="date", description='Fecha del evento'),
+                'hora': openapi.Schema(type=openapi.TYPE_STRING, format="time", description='Hora del evento'),
+                'max_asistencias': openapi.Schema(type=openapi.TYPE_INTEGER, description='Capacidad máxima de asistentes'),
+                'usuario': openapi.Schema(type=openapi.TYPE_STRING, description='Nombre del usuario.'),
+                'url_img': openapi.Schema(type=openapi.TYPE_STRING, description='Dirección de la imagen.')
+            },
+        ),
+        responses={200: openapi.Response(description="Evento actualizado."),
+                   403: openapi.Response(
+                       description="El tipo de usuario no es organizador. No se puede efectuar la creación del evento."),
+                   404: openapi.Response(
+                       description="No hay ningún evento identificado por el id deseado en nuestra base de datos.")
+                   }
+    )
+
     def put (self, request, id):
         return self.actualizar_evento(request,id)
     def patch (self, request, id):
@@ -236,7 +257,7 @@ class actualizar_eventoAPIView(APIView):
                 evento.save()
 
                 # Responder con el evento actualizado
-                return Response({"id": evento.id, "nombre": evento.nombre, "mensaje": "Evento actualizado."})
+                return Response({"id": evento.id, "nombre": evento.nombre, "mensaje": "Evento actualizado."},status=200)
                 # Si el usuario no existe, devolver un error 404
             except Evento.DoesNotExist:
                 # Si el evento no existe, devolver un error 404
