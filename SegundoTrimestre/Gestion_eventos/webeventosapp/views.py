@@ -176,7 +176,7 @@ class crear_eventoAPIView(APIView):
 class actualizar_eventoAPIView(APIView):
     permission_classes = [esOrganizador]
     @swagger_auto_schema(
-        operation_description="Actualiza totalmente o parcialmente un nuevo evento.",
+        operation_description="Actualiza parcialmente un  evento.",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
@@ -195,6 +195,26 @@ class actualizar_eventoAPIView(APIView):
 
     def put (self, request, id):
         return self.actualizar_evento(request,id)
+
+    @swagger_auto_schema(
+        operation_description="Actualiza totalmente un  evento.",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'nombre': openapi.Schema(type=openapi.TYPE_STRING, description='Nombre del evento'),
+                'descripcion': openapi.Schema(type=openapi.TYPE_STRING, description='Descripción del evento'),
+                'fecha': openapi.Schema(type=openapi.TYPE_STRING, format="date", description='Fecha del evento'),
+                'hora': openapi.Schema(type=openapi.TYPE_STRING, format="time", description='Hora del evento'),
+                'max_asistencias': openapi.Schema(type=openapi.TYPE_INTEGER,
+                                                  description='Capacidad máxima de asistentes'),
+                'usuario': openapi.Schema(type=openapi.TYPE_STRING, description='Nombre del usuario.'),
+                'url_img': openapi.Schema(type=openapi.TYPE_STRING, description='Dirección de la imagen.')
+            },
+            required=['nombre', 'descripcion', 'fecha', 'max_asistencias']
+        ),
+        responses={200: openapi.Response(description="Evento actualizado."),
+                   404: openapi.Response(description="No hay ningún evento identificado por el id deseado en nuestra base de datos.")}
+    )
     def patch (self, request, id):
         return(self.actualizar_evento(request, id))
 
@@ -415,7 +435,23 @@ class actualizar_reservaAPIView(APIView):
     permission_classes = [esOrganizador]
 
     @swagger_auto_schema(
-        operation_description="Modifica los organizadores los campos totalmente o parcialmente  de la reserva.",
+        operation_description="Modifica los organizadores los campos  parcialmente  de la reserva concretada.",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'evento': openapi.Schema(type=openapi.TYPE_STRING, description='Nombre del evento'),
+                'entradas_reservadas': openapi.Schema(type=openapi.TYPE_INTEGER,description='Número de entradas reservadas'),
+                'estado': openapi.Schema(type=openapi.TYPE_STRING, description="Estado de la reserva")
+            },
+        ),
+        responses={200: openapi.Response(description="Se ha modificado la reserva correctamente."),
+                   404: openapi.Response(description="¡Error! No se pudo efectuar la modificación debido a que el nombre del evento introducido no está registrado.")}
+    )
+    def patch(self,request,id):
+        return self.actualizar_reserva(request, id)
+
+    @swagger_auto_schema(
+        operation_description="Modifica los organizadores los campos totalmente   de la reserva.",
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
@@ -428,8 +464,6 @@ class actualizar_reservaAPIView(APIView):
         responses={200: openapi.Response(description="Se ha modificado la reserva correctamente."),
                    404: openapi.Response(description="¡Error! No se pudo efectuar la modificación debido a que el nombre del evento introducido no está registrado.")}
     )
-    def patch(self,request,id):
-        return self.actualizar_reserva(request, id)
 
     def put (self, request, id):
         return self.actualizar_reserva(request, id)
