@@ -113,6 +113,30 @@ class listar_eventosAPIView(APIView):
 
 class crear_eventoAPIView(APIView):
     permission_classes = [esOrganizador]
+
+    @swagger_auto_schema(
+        operation_description="Crea un nuevo evento.",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'nombre': openapi.Schema(type=openapi.TYPE_STRING, description='Nombre del evento'),
+                'descripcion': openapi.Schema(type=openapi.TYPE_STRING, description='Descripción del evento'),
+                'fecha': openapi.Schema(type=openapi.TYPE_STRING, format="date", description='Fecha del evento'),
+                'hora': openapi.Schema(type=openapi.TYPE_STRING, format="time", description='Hora del evento'),
+                'max_asistencias': openapi.Schema(type=openapi.TYPE_INTEGER,
+                                                  description='Capacidad máxima de asistentes'),
+                'usuario': openapi.Schema(type=openapi.TYPE_STRING, description='Nombre del usuario.'),
+                'url_img': openapi.Schema(type=openapi.TYPE_STRING, description='Dirección de la imagen.')
+            },
+            required=['nombre', 'descripcion', 'fecha', 'hora', 'max_asistencias', 'usuario', 'url_img']
+        ),
+        responses={201: openapi.Response(description="Evento creado"),
+                   403: openapi.Response(
+                       description="El tipo de usuario no es organizador. No se puede efectuar la creación del evento."),
+                   404: openapi.Response(
+                       description="No existe el usuario asociado al evento que se desea crear en nuestra base de datos.")
+                   }
+    )
     def post (self, request):
         """
         Vista para crear un nuevo evento.
