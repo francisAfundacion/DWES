@@ -10,20 +10,26 @@ from rest_framework.response import Response
 from rest_framework.permissions import BasePermission
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.views import ObtainAuthToken
-import json
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from rest_framework import serializers
 
 
 class  esOrganizador(BasePermission):
     def has_permission(self, request, view):
+        print(f"estoy aqyu",request.user)
         return request.user and request.user.tipo == "organizador"
 
 class  esParticipante(BasePermission):
     def has_permission(self, request, view):
         return request.user and request.user.tipo == "participante"
 
+#class SerializadorEvento(serializer.Serializer):
+
 
 class listar_eventosAPIView(APIView):
     permission_classes = [IsAuthenticated]
+
     def get(self, request):
 
         """
@@ -121,8 +127,6 @@ class crear_eventoAPIView(APIView):
         if request.method == "POST":
             nombre_usuario_post = diccionario_nuevo_evento["usuario"]
             try:
-                # Obtener el usuario asociado al evento
-                consulta_usuario_post = UsuarioPersonalizado.objects.get(username__iexact=nombre_usuario_post)
                 # Crear un nuevo evento con los datos proporcionados
                 nuevo_evento = Evento.objects.create(
                     nombre=diccionario_nuevo_evento["nombre"],
@@ -130,7 +134,7 @@ class crear_eventoAPIView(APIView):
                     fecha=diccionario_nuevo_evento["fecha"],
                     hora=diccionario_nuevo_evento["hora"],
                     max_asistencias=diccionario_nuevo_evento["max_asistencias"],
-                    usuario=consulta_usuario_post,
+                    usuario=request.user,
                     url_img=diccionario_nuevo_evento["url_img"]
                 )
 
@@ -151,6 +155,7 @@ class actualizar_eventoAPIView(APIView):
     def patch (self, request, id):
         return(self.actualizar_evento(request, id))
     def actualizar_evento(self, request, id):
+
         """
         Vista para actualizar los detalles de un evento existente.
 
@@ -173,6 +178,7 @@ class actualizar_eventoAPIView(APIView):
         - Si el usuario no existe en el sistema, se devuelve un error con código de estado 404 (No encontrado).
         - Si el tipo de usuario no es 'organizador', no se actualiza el evento y se devuelve un error con código de estado 403 (Prohibido).
         """
+
         if request.method in ["PUT", "PATCH"]:
             # Cargar los datos del cuerpo de la solicitud
             campos_modif_evento = request.data
@@ -186,12 +192,7 @@ class actualizar_eventoAPIView(APIView):
                 evento.hora = campos_modif_evento.get("hora", evento.hora)
                 evento.max_asistencias = campos_modif_evento.get("max_asistencias", evento.max_asistencias)
                 evento.url_img = campos_modif_evento.get("url_img", evento.url_img)
-
-                # Obtener el usuario asociado al evento (se verifica que exista)
-                nombre_usuario = campos_modif_evento.get("usuario", evento.usuario.username)
-                consulta_usuario = UsuarioPersonalizado.objects.get(username=nombre_usuario)
-                print(consulta_usuario)
-                evento.usuario = consulta_usuario
+                evento.usuario = request.user
 
                 # Guardar los cambios en el evento
                 evento.save()
@@ -243,7 +244,7 @@ class listar_reservasAPIView(APIView):
         - Si el usuario no está autenticado, devuelve un error 403.
         - Si el usuario no existe, devuelve un error 404.
         """
-        nombre_usuario = request.query_params.get("usuario")
+        nombre_usuario = request.user.username
         try:
             # Obtener el usuario por nombre (ignorando mayúsculas/minúsculas)
             objeto_usuario = UsuarioPersonalizado.objects.get(username__iexact=nombre_usuario)
@@ -267,9 +268,9 @@ class listar_reservasAPIView(APIView):
 
         return Response(data_reservas)
 
-    @require_http_methods(["DELETE"])
-    @csrf_exempt
-    def eliminar_reserva(request, id):
+class eliminar_reservasAPIView(APIView):
+    permission_classes = [esParticipante]
+    def delete(self, request, id):
 
         """
         Vista para cancelar una reserva existente.
@@ -288,34 +289,27 @@ class listar_reservasAPIView(APIView):
         - Si el tipo de usuario no es 'participante', se devuelve un error con código de estado 403.
         - Si la reserva con el ID especificado no existe, se devuelve un error con código de estado 404.
         """
-        tipo_usuario = request.GET.get("tipo_usuario")
-        # Verificar si el tipo de usuario es 'participante' y si la solicitud es de tipo DELETE
-        if request.method == "DELETE" and tipo_usuario == "participante":
-            try:
-                # Verificar si la reserva con el ID proporcionado existe
-                reserva_eliminar = Reserva.objects.get(id=id)
-                # Obtener información de la reserva que será eliminada
-                info_reserva = {
-                    "id": reserva_eliminar.id,
-                    "evento": reserva_eliminar.evento.nombre
-                }
-                # Eliminar la reserva
-                reserva_eliminar.delete()
-                # Responder con mensaje de éxito
-                return JsonResponse({"mensaje": "Producto eliminado con éxito.", "info_reserva": info_reserva})
-            except Reserva.DoesNotExist:
-                # Si la reserva no existe, devolver un error con código 404
-                return JsonResponse({"mensaje": "¡Error! No existe el id de la reserva que se desea eliminar."},
-                                    status=404)
-        else:
-            # Si el tipo de usuario no es 'participante', devolver un error con código 403
-            return JsonResponse(
-                {"mensaje": "¡Error! El tipo de usuario no es de tipo participante. No podrá eliminar reservas."},
-                status=403)
 
-    @require_http_methods(["POST"])
-    @csrf_exempt
-    def crear_reserva(request):
+        # Verificar si el tipo de usuario es 'participante' y si la solicitud es de tipo DELETE
+        try:
+            # Verificar si la reserva con el ID proporcionado existe
+            reserva_eliminar = Reserva.objects.get(id=id)
+            # Obtener información de la reserva que será eliminada
+            info_reserva = {
+                "id": reserva_eliminar.id,
+                "evento": reserva_eliminar.evento.nombre
+            }
+            #Eliminar la reserva
+            reserva_eliminar.delete()
+            # Responder con mensaje de éxito
+            return Response({"mensaje": "Producto eliminado con éxito.", "info_reserva": info_reserva})
+        except Reserva.DoesNotExist:
+            # Si la reserva no existe, devolver un error con código 404
+            return Response({"mensaje": "¡Error! No existe el id de la reserva que se desea eliminar."},status=404)
+
+class crear_reservaAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post (self, request):
 
         """
            Vista para crear una nueva reserva para un evento.
@@ -332,33 +326,31 @@ class listar_reservasAPIView(APIView):
            - Si la reserva se crea correctamente, devuelve el ID de la reserva y el nombre del evento.
            - Si el usuario o el evento no existen, devuelve un error.
            """
-        if request.method == "POST":
-            diccionario_nueva_reserva = json.loads(request.body)
-            nombre_usuario = diccionario_nueva_reserva["usuario"]
-            nombre_evento = diccionario_nueva_reserva["evento"]
-            try:
-                # Verificar si el usuario existe
-                objeto_usuario = UsuarioPersonalizado.objects.get(username__iexact = nombre_usuario)
-            except UsuarioPersonalizado.DoesNotExist:
-                return JsonResponse({"mensaje": "El username introducido no se asocia con ninguno que esté guardado en nuestra base de datos."}, status = 404)
-            try:
-                # Verificar si el evento existe
-                objeto_evento = Evento.objects.get(nombre__iexact = nombre_evento)
-                nueva_reserva = Reserva.objects.create(
-                    estado=diccionario_nueva_reserva["estado"],
-                    usuario=objeto_usuario,
-                    evento=objeto_evento,
-                    entradas_reservadas=diccionario_nueva_reserva["entradas_reservadas"]
-                )
-                return JsonResponse({"id": nueva_reserva.id, "nombre": nueva_reserva.evento.nombre, "mensaje": "Se ha creado la reserva correctamente."}, status = 201)
-            # Si el evento no existe
-            except Evento.DoesNotExist:
-                return JsonResponse({ "mensaje": "El nombre del evento introducido no se asocia con ninguno que esté guardado en nuestra base de datos."}, status = 404)
+        diccionario_nueva_reserva = request.data
+        nombre_evento = diccionario_nueva_reserva["evento"]
+        try:
+            # Verificar si el evento existe
+            objeto_evento = Evento.objects.get(nombre__iexact = nombre_evento)
+            nueva_reserva = Reserva.objects.create(
+                estado=diccionario_nueva_reserva["estado"],
+                usuario=request.user,
+                evento=objeto_evento,
+                entradas_reservadas=diccionario_nueva_reserva["entradas_reservadas"]
+            )
+            return Response({"id": nueva_reserva.id, "nombre": nueva_reserva.evento.nombre, "mensaje": "Se ha creado la reserva correctamente."}, status = 201)
+         # Si el evento no existe
+        except Evento.DoesNotExist:
+            return Response({ "mensaje": "El nombre del evento introducido no se asocia con ninguno que esté guardado en nuestra base de datos."}, status = 404)
 
+class actualizar_reservaAPIView(APIView):
+    permission_classes = [esOrganizador]
+    def patch(self,request,id):
+        return self.actualizar_reserva(request, id)
 
-    @require_http_methods(["PUT","PATCH"])
-    @csrf_exempt
-    def actualizar_reserva(request, id):
+    def put (self, request, id):
+        return self.actualizar_reserva(request, id)
+
+    def actualizar_reserva(self, request, id):
 
         """
          Vista para actualizar una reserva existente.
@@ -377,40 +369,34 @@ class listar_reservasAPIView(APIView):
          - Si el usuario que efectúa la actualización de la reserva no es de tipo organizador, se mostrará mensaje de error.
          """
 
-        if request.method in ["PUT","PATCH"]:
-            campos_modif_reserva = json.loads(request.body)
-            try:
-                # Verificar si la reserva con el id especificado existe
-                reserva_modif = Reserva.objects.get(id = id)
-            except Reserva.DoesNotExist:
-                return JsonResponse({ "mensaje": "¡Error! No existe el id de la reserva que se desea modificar."},status = 404)
-            try:
-                # Verificar si el usuario existe
-                nombre_usuario = campos_modif_reserva.get("usuario", reserva_modif.usuario.username)
-                objeto_usuario = UsuarioPersonalizado.objects.get(username__iexact = nombre_usuario)
-            except UsuarioPersonalizado.DoesNotExist:
-                return  JsonResponse({"mensaje": "¡Error! No se pudo efectuar la modificación debido a que el nombre de usuario introducido no está registrado."}, status = 404)
-            try:
-                if objeto_usuario.tipo == "organizador":
-                    reserva_modif.estado = campos_modif_reserva.get("estado", reserva_modif.estado)
-                    reserva_modif.entradas_reservadas = campos_modif_reserva.get("entradas_reservadas",reserva_modif.entradas_reservadas)
-                    nombre_evento = campos_modif_reserva.get("evento", reserva_modif.evento.nombre)
-                    # Verificar si el evento existe
-                    objeto_evento = Evento.objects.get(nombre__iexact = nombre_evento)
-                    reserva_modif.usuario = objeto_usuario
-                    reserva_modif.evento = objeto_evento
-                    reserva_modif.save()
-                    return JsonResponse({"id": reserva_modif.id, "evento": reserva_modif.evento.nombre,"mensaje": "Reserva actualizada con éxito."})
-                else:
-                    return JsonResponse({"mensaje": "No se le permite  actualizar la reserva al no ser un usuario de tipo organizador."}, status=403)
-            except Evento.DoesNotExist:
-                return JsonResponse({"mensaje": "¡Error! No se pudo efectuar la modificación debido a que el nombre del evento introducido no está registrado."}, status = 404)
+        campos_modif_reserva = request.data
+        try:
+            # Verificar si la reserva con el id especificado existe
+            reserva_modif = Reserva.objects.get(id = id)
+        except Reserva.DoesNotExist:
+            return Response({ "mensaje": "¡Error! No existe el id de la reserva que se desea modificar."},status = 404)
+        try:
+            # Verificar si el usuario existe
+            nombre_usuario = campos_modif_reserva.get("usuario", reserva_modif.usuario.username)
+            objeto_usuario = UsuarioPersonalizado.objects.get(username__iexact = nombre_usuario)
+        except UsuarioPersonalizado.DoesNotExist:
+            return  Response({"mensaje": "¡Error! No existe el usuario introducido."}, status = 404)
+        try:
+            reserva_modif.estado = campos_modif_reserva.get("estado", reserva_modif.estado)
+            reserva_modif.entradas_reservadas = campos_modif_reserva.get("entradas_reservadas",reserva_modif.entradas_reservadas)
+            nombre_evento = campos_modif_reserva.get("evento", reserva_modif.evento.nombre)
+            # Verificar si el evento existe
+            objeto_evento = Evento.objects.get(nombre__iexact = nombre_evento)
+            reserva_modif.usuario = objeto_usuario
+            reserva_modif.evento = objeto_evento
+            reserva_modif.save()
+            return Response({"id": reserva_modif.id, "evento": reserva_modif.evento.nombre,"mensaje": "Reserva actualizada con éxito."})
+        except Evento.DoesNotExist:
+            return Response({"mensaje": "¡Error! No se pudo efectuar la modificación debido a que el nombre del evento introducido no está registrado."}, status = 404)
 
-
-    @require_http_methods(["GET"])
-    @csrf_exempt
-    def listar_comentarios(request, id):
-
+class listar_comentariosAPIView(APIView):
+    permission_classes =  [IsAuthenticated]
+    def get(self, request, id):
         """
            Vista para listar los comentarios asociados a un evento.
 
@@ -441,16 +427,16 @@ class listar_reservasAPIView(APIView):
                             for sql_comentario in consulta_comentarios]
         # Si no hay comentarios para el evento
             if len(lista_comentarios) == 0:
-                return JsonResponse({"mensaje": "No hay comentarios asociados al evento especificado."}, status = 404)
+                return Response({"mensaje": "No hay comentarios asociados al evento especificado."}, status = 404)
             else:
-                return JsonResponse(lista_comentarios, safe=False)
+                return Response(lista_comentarios)
         # Si el evento no existe
         except Evento.DoesNotExist:
-            return JsonResponse({"mensaje": "¡Error! El id del evento deseada para su listado es incorrecto."}, status = 404)
+            return Response({"mensaje": "¡Error! El id del evento deseada para su listado es incorrecto."}, status = 404)
 
-    @require_http_methods(["POST"])
-    @csrf_exempt
-    def crear_comentario(request):
+class crear_comentarioAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
 
         """
            Vista para crear un nuevo comentario para un evento.
@@ -472,82 +458,71 @@ class listar_reservasAPIView(APIView):
            - Si el usuario no existe en la base de datos, se devuelve un error con código de estado 404 (No encontrado).
            - Si el evento no existe en la base de datos, se devuelve un error con código de estado 404 (No encontrado).
            """
-
-        if request.method == "POST":
-            # Verificación de si el usuario está autenticado
-            autenticado = request.GET.get("autenticado", "false").lower() == "true"
-            if  not autenticado:
-                return JsonResponse({"mensaje": "No se le permite a usuarios no autenticados crear comentarios."}, status= 403)
-            else:
-                # Procesar el cuerpo de la solicitud para crear el comentario
-                diccionario_comentario = json.loads(request.body)
-                nombre_usuario = diccionario_comentario["usuario"]
-                # Verificar si el usuario existe en la base de datos
-                objeto_usuario = UsuarioPersonalizado.objects.get(username = nombre_usuario)
-                try:
-                    nombre_evento = diccionario_comentario["evento"]
-                    # Verificar si el evento existe en la base de datos
-                    objeto_evento = Evento.objects.get(nombre = nombre_evento)
-                    # Crear el comentario
-                    nuevo_comentario = Comentario.objects.create(
-                        texto = diccionario_comentario["texto"],
-                        fecha = diccionario_comentario["fecha"],
-                        usuario =objeto_usuario,
-                        evento = objeto_evento
-                    )
-                    return JsonResponse({"id": nuevo_comentario.id, "evento": objeto_evento.nombre,"mensaje": "El comentario se ha creado correctamente."}, status = 201)
-                except Evento.DoesNotExist:
-                        # Error si el evento no existe
-                        return  JsonResponse({"mensaje":"El evento que se desea asociar en la creación del comentario no existe en nuestra base de datos."}, status = 404)
+        try:
+            # Procesar el cuerpo de la solicitud para crear el comentario
+            diccionario_comentario = request.data
+            nombre_evento = diccionario_comentario["evento"]
+            # Verificar si el evento existe en la base de datos
+            objeto_evento = Evento.objects.get(nombre = nombre_evento)
+            # Crear el comentario
+            nuevo_comentario = Comentario.objects.create(
+                texto = diccionario_comentario["texto"],
+                fecha = diccionario_comentario["fecha"],
+                usuario = request.user,
+                evento = objeto_evento
+            )
+            return Response({"id": nuevo_comentario.id, "evento": objeto_evento.nombre,"mensaje": "El comentario se ha creado correctamente."}, status = 201)
+        except Evento.DoesNotExist:
+            # Error si el evento no existe
+            return Response({"mensaje":"El evento que se desea asociar en la creación del comentario no existe en nuestra base de datos."}, status = 404)
 
 
-    def comprobar_username(nombre_usuario):
+def comprobar_username(nombre_usuario):
 
-        """
-        Verifica si el nombre de usuario existe en la base de datos.
+    """
+    Verifica si el nombre de usuario existe en la base de datos.
 
-        Parámetros:
-        - nombre_usuario: El nombre de usuario a verificar.
+    Parámetros:
+    - nombre_usuario: El nombre de usuario a verificar.
 
-        Retorna:
-        - True si el nombre de usuario existe.
-        - False si el nombre de usuario no existe.
-        """
+    Retorna:
+    - True si el nombre de usuario existe.
+    - False si el nombre de usuario no existe.
+    """
 
-        return UsuarioPersonalizado.objects.filter(username = nombre_usuario).exists()
+    return UsuarioPersonalizado.objects.filter(username = nombre_usuario).exists()
 
-    def comprobar_contrasena (pass_usuario):
+def comprobar_contrasena (pass_usuario):
 
-        """
-           Verifica si la contraseña existe en la base de datos.
+    """
+    Verifica si la contraseña existe en la base de datos.
 
-           Parámetros:
-           - pass_usuario: La contraseña del usuario.
+    Parámetros:
+    - pass_usuario: La contraseña del usuario.
 
-           Retorna:
-           - True si la contraseña es válida.
-           - False si la contraseña es incorrecta.
-           """
+    Retorna:
+    - True si la contraseña es válida.
+    - False si la contraseña es incorrecta.
+    """
 
-        return UsuarioPersonalizado.objects.filter(password = pass_usuario).exists()
+    return UsuarioPersonalizado.objects.filter(password = pass_usuario).exists()
 
-    def comprobar_email (email_usuario):
+def comprobar_email (email_usuario):
 
-        """
-           Verifica si el email existe en la base de datos.
+    """
+    Verifica si el email existe en la base de datos.
 
-           Parámetros:
-           - email_usuario: El email del usuario.
+    Parámetros:
+    - email_usuario: El email del usuario.
 
-           Retorna:
-           - True si el email existe.
-           - False si el email no existe.
-           """
-        return UsuarioPersonalizado.objects.filter(email = email_usuario).exists()
+    Retorna:
+    - True si el email existe.
+    - False si el email no existe.
+    """
+    return UsuarioPersonalizado.objects.filter(email = email_usuario).exists()
 
-    @require_http_methods(["POST"])
-    @csrf_exempt
-    def register(request):
+class registerAPIView(APIView):
+    def post(self, request):
 
         """
             Vista para registrar un nuevo usuario en el sistema.
@@ -568,38 +543,36 @@ class listar_reservasAPIView(APIView):
             - Si todos los datos son válidos, crea un nuevo usuario y devuelve los detalles del usuario junto con un mensaje de éxito.
             - Si algún campo obligatorio está vacío o hay un error con los datos, se devuelve un mensaje de error indicando el problema.
             """
+        diccionario_usuario_alta = request.data
+        nombre_usuario = diccionario_usuario_alta.get("username", "")
+        pass_usuario = diccionario_usuario_alta.get("password", "")
+        email_usuario = diccionario_usuario_alta.get("email", "")
+        tipo_usuario = diccionario_usuario_alta.get("tipo_usuario", "").lower()
+        biografia_usuario = diccionario_usuario_alta.get("biografia","")
 
-        if request.method == "POST":
-            diccionario_usuario_alta = json.loads(request.body)
-            nombre_usuario = diccionario_usuario_alta.get("username", "")
-            pass_usuario = diccionario_usuario_alta.get("password", "")
-            email_usuario = diccionario_usuario_alta.get("email", "")
-            tipo_usuario = diccionario_usuario_alta.get("tipo_usuario", "").lower()
-            print(tipo_usuario)
-            biografia_usuario = diccionario_usuario_alta.get("biografia","")
+        # Validación de campos obligatorios
+        if nombre_usuario == "" or pass_usuario == "" or email_usuario == "" or tipo_usuario == "":
+            return Response({"mensaje": "Se han dejado campo/s obligatorio/s sin rellenar. Recuerda que el único campo opcional es la biografía."}, status = 400)
 
-            # Validación de campos obligatorios
-            if nombre_usuario == "" or pass_usuario == "" or email_usuario == "" or tipo_usuario == "":
-                return JsonResponse({"mensaje": "Se han dejado campo/s obligatorio/s sin rellenar. Recuerda que el único campo opcional es la biografía."}, status = 400)
+        # Validación de que los datos sean únicos y tipo de usuario válido
+        if tipo_usuario not in ["organizador","participante"]:
+            return Response({"tipo_usuario": tipo_usuario, "mensaje": "El tipo de usuario es incorrecto, debería ser organizador o participante."},status=400)
 
-            # Validación de que los datos sean únicos y tipo de usuario válido
-            if tipo_usuario not in ["organizador","participante"]:
-                return JsonResponse({"tipo_usuario": tipo_usuario, "mensaje": "El tipo de usuario es incorrecto, debería ser organizador o participante."})
+        if comprobar_email(email_usuario):
+            return Response({"email": email_usuario, "mensaje": "El email introducido ya está en uso."}, status=400)
 
-            if comprobar_email(email_usuario):
-                return JsonResponse({"email": email_usuario, "mensaje": "El email introducido ya está en uso."})
+        if comprobar_username(nombre_usuario):
+            return Response({"usuario": nombre_usuario, "mensaje": "El nombre de usuario introducido ya está en uso."}, status=400)
 
-            if comprobar_username(nombre_usuario):
-                return JsonResponse({"usuario": nombre_usuario, "mensaje": "El nombre de usuario introducido ya está en uso." })
+        if comprobar_contrasena(pass_usuario):
+            return Response({"mensaje": "La contraseña introducida ya está en uso"},status=400)
 
-            if comprobar_contrasena(pass_usuario):
-                return JsonResponse({"mensaje": "La contraseña introducida ya está en uso"})
-            # Creación del nuevo usuario
-            nuevo_usuario = UsuarioPersonalizado.objects.create(
-                username = nombre_usuario,
-                password = pass_usuario,
-                email = email_usuario,
-                tipo = tipo_usuario,
-                biografia = biografia_usuario
-            )
-            return JsonResponse({"usuario": nuevo_usuario.username, "email": nuevo_usuario.password, "mensaje": "El usuario ha sido dado de alta con éxito."}, status = 201)
+        # Creación del nuevo usuario
+        nuevo_usuario = UsuarioPersonalizado.objects.create(
+            username = nombre_usuario,
+            password = pass_usuario,
+            email = email_usuario,
+            tipo = tipo_usuario,
+            biografia = biografia_usuario
+        )
+        return Response({"usuario": nuevo_usuario.username, "email": nuevo_usuario.password, "mensaje": "El usuario ha sido dado de alta con éxito."}, status = 201)
