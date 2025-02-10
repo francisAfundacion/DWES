@@ -246,7 +246,6 @@ class actualizar_eventoAPIView(APIView):
         if request.method in ["PUT", "PATCH"]:
             # Cargar los datos del cuerpo de la solicitud
             campos_modif_evento = request.data
-            consulta_usuario = UsuarioPersonalizado.objects.get(username__iexact=nombre_usuario)
             try:
                  # Obtener el evento a actualizar mediante su ID
                 evento = Evento.objects.get(id=id)
@@ -257,7 +256,14 @@ class actualizar_eventoAPIView(APIView):
                 evento.hora = campos_modif_evento.get("hora", evento.hora)
                 evento.max_asistencias = campos_modif_evento.get("max_asistencias", evento.max_asistencias)
                 evento.url_img = campos_modif_evento.get("url_img", evento.url_img)
-                evento.usuario = campos_modif_evento.get(consulta_usuario, evento.usuario)
+                try:
+                    nombre_usuario = campos_modif_evento.get("usuario", evento.usuario)
+                    usuario = UsuarioPersonalizado.objects.get(username__iexact=nombre_usuario)
+                    evento.usuario = usuario
+                except UsuarioPersonalizado.DoesNotExist:
+                    return Response({"mensaje": "El usuario no existe."}, status=404)
+
+
 
                 # Guardar los cambios en el evento
                 evento.save()
