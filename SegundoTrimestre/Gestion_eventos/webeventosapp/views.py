@@ -148,30 +148,24 @@ class crear_eventoAPIView(APIView):
 
         Respuesta:
         - Si el usuario es válido y el evento se crea correctamente, devuelve los detalles del evento creado.
-        - Si el usuario no existe, devuelve un error indicando que el usuario no se encuentra en la base de datos.
         - Si el tipo de usuario no es 'organizador', devuelve un error con código de estado 403 (Prohibido).
         """
 
         diccionario_nuevo_evento = request.data
         if request.method == "POST":
-            try:
-                # Crear un nuevo evento con los datos proporcionados
-                nuevo_evento = Evento.objects.create(
-                    nombre=diccionario_nuevo_evento["nombre"],
-                    descripcion=diccionario_nuevo_evento["descripcion"],
-                    fecha=diccionario_nuevo_evento["fecha"],
-                    hora=diccionario_nuevo_evento["hora"],
-                    max_asistencias=diccionario_nuevo_evento["max_asistencias"],
-                    usuario=request.user,
-                    url_img=diccionario_nuevo_evento["url_img"]
-                )
+            # Crear un nuevo evento con los datos proporcionados
+            nuevo_evento = Evento.objects.create(
+                nombre=diccionario_nuevo_evento["nombre"],
+                descripcion=diccionario_nuevo_evento["descripcion"],
+                fecha=diccionario_nuevo_evento["fecha"],
+                hora=diccionario_nuevo_evento["hora"],
+                max_asistencias=diccionario_nuevo_evento["max_asistencias"],
+                usuario=request.user,
+                url_img=diccionario_nuevo_evento["url_img"]
+            )
 
-                # Responder con los detalles del evento creado
-                return Response({"id": nuevo_evento.id, "nombre": nuevo_evento.nombre, "mensaje": "Evento guardado correctamente."},status=201)
-
-            except UsuarioPersonalizado.DoesNotExist:
-                # Si no existe el usuario asociado al evento, devolver un error 404
-                return Response({"mensaje": "No existe el usuario asociado al evento que se desea crear en nuestra base de datos."},status=404)
+            # Responder con los detalles del evento creado
+            return Response({"id": nuevo_evento.id, "nombre": nuevo_evento.nombre, "mensaje": "Evento guardado correctamente."},status=201)
 
 class actualizar_eventoAPIView(APIView):
     permission_classes = [esOrganizador]
@@ -262,10 +256,6 @@ class actualizar_eventoAPIView(APIView):
                     evento.usuario = usuario
                 except UsuarioPersonalizado.DoesNotExist:
                     return Response({"mensaje": "El usuario no existe."}, status=404)
-
-
-
-                # Guardar los cambios en el evento
                 evento.save()
 
                 # Responder con el evento actualizado
@@ -425,7 +415,6 @@ class crear_reservaAPIView(APIView):
 
            Respuesta:
            - Si la reserva se crea correctamente, devuelve el ID de la reserva y el nombre del evento.
-           - Si el usuario o el evento no existen, devuelve un error.
            """
         diccionario_nueva_reserva = request.data
         nombre_evento = diccionario_nueva_reserva["evento"]
@@ -476,7 +465,10 @@ class actualizar_reservaAPIView(APIView):
             required=['evento', 'entradas_reservadas', 'estado', 'usuario']
         ),
         responses={200: openapi.Response(description="Se ha modificado la reserva correctamente."),
-                   404: openapi.Response(description="¡Error! No se pudo efectuar la modificación debido a que el nombre del evento introducido no está registrado.")}
+                   404: openapi.Response(description="¡Error! No se pudo efectuar la modificación debido a los siguientes motivos:"
+                                                     "\n- Nombre del evento introducido no está registrado."
+                                                     "\n- No existe el usuario introducido"
+                                                    "\n- No existe el id de la reserva.")}
     )
 
     def put (self, request, id):
@@ -497,7 +489,7 @@ class actualizar_reservaAPIView(APIView):
 
          Respuesta:
          - Si la reserva se actualiza correctamente, devuelve el ID y el nombre del evento.
-         - Si no se encuentra la reserva, el usuario o el evento, devuelve un error.
+         - Si no se encuentra la reserva o el evento, devuelve un error.
          - Si el usuario que efectúa la actualización de la reserva no es de tipo organizador, se mostrará mensaje de error.
          """
 
