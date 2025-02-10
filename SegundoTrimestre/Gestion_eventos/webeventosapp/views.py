@@ -33,14 +33,10 @@ class listar_eventosAPIView(APIView):
     @swagger_auto_schema(
         operation_description="Lista eventos que presenta filtros opcionales por nombre del evento o fecha, ordenación acorde a  los campos nombrados y número de página y límite de registros en cada una de estas..",
         manual_parameters=[
-            openapi.Parameter('nombre', openapi.IN_QUERY, description="Filtrar por nombre del evento",
-                              type=openapi.TYPE_STRING),
-            openapi.Parameter('fecha', openapi.IN_QUERY, description="Filtrar por fecha (YYYY-MM-DD)",
-                              type=openapi.TYPE_STRING),
-            openapi.Parameter('pagina', openapi.IN_QUERY, description="Número de página",
-                              type=openapi.TYPE_INTEGER),
-            openapi.Parameter('limite', openapi.IN_QUERY, description="Límite de registros de cada página.",
-                              type=openapi.TYPE_INTEGER)
+            openapi.Parameter('nombre', openapi.IN_QUERY, description="Filtrar por nombre del evento",type=openapi.TYPE_STRING),
+            openapi.Parameter('fecha', openapi.IN_QUERY, description="Filtrar por fecha (YYYY-MM-DD)",type=openapi.TYPE_STRING),
+            openapi.Parameter('pagina', openapi.IN_QUERY, description="Número de página",type=openapi.TYPE_INTEGER),
+            openapi.Parameter('limite', openapi.IN_QUERY, description="Límite de registros de cada página.",type=openapi.TYPE_INTEGER)
         ],
         responses={200: openapi.Response(description="Lista de eventos.")}
     )
@@ -131,10 +127,7 @@ class crear_eventoAPIView(APIView):
             required=['nombre', 'descripcion', 'fecha', 'hora', 'max_asistencias', 'usuario', 'url_img']
         ),
         responses={201: openapi.Response(description="Evento creado"),
-                   403: openapi.Response(
-                       description="El tipo de usuario no es organizador. No se puede efectuar la creación del evento."),
-                   404: openapi.Response(
-                       description="No existe el usuario asociado al evento que se desea crear en nuestra base de datos.")
+                   404: openapi.Response( description="No existe el usuario asociado al evento que se desea crear en nuestra base de datos.")
                    }
     )
     def post (self, request):
@@ -161,9 +154,7 @@ class crear_eventoAPIView(APIView):
         """
 
         diccionario_nuevo_evento = request.data
-
         if request.method == "POST":
-            nombre_usuario_post = diccionario_nuevo_evento["usuario"]
             try:
                 # Crear un nuevo evento con los datos proporcionados
                 nuevo_evento = Evento.objects.create(
@@ -182,8 +173,6 @@ class crear_eventoAPIView(APIView):
             except UsuarioPersonalizado.DoesNotExist:
                 # Si no existe el usuario asociado al evento, devolver un error 404
                 return Response({"mensaje": "No existe el usuario asociado al evento que se desea crear en nuestra base de datos."},status=404)
-        else :
-            return Response({"mensaje":"El tipo de usuario no es organizador. No se puede efectuar la creación del evento."}, status=403)
 
 class actualizar_eventoAPIView(APIView):
     permission_classes = [esOrganizador]
@@ -202,8 +191,6 @@ class actualizar_eventoAPIView(APIView):
             },
         ),
         responses={200: openapi.Response(description="Evento actualizado."),
-                   403: openapi.Response(
-                       description="El tipo de usuario no es organizador. No se puede efectuar la creación del evento."),
                    404: openapi.Response(
                        description="No hay ningún evento identificado por el id deseado en nuestra base de datos.")
                    }
@@ -213,6 +200,7 @@ class actualizar_eventoAPIView(APIView):
         return self.actualizar_evento(request,id)
     def patch (self, request, id):
         return(self.actualizar_evento(request, id))
+
     def actualizar_evento(self, request, id):
 
         """
@@ -262,9 +250,7 @@ class actualizar_eventoAPIView(APIView):
             except Evento.DoesNotExist:
                 # Si el evento no existe, devolver un error 404
                 return Response({"mensaje": "No hay ningún evento identificado por el id deseado en nuestra base de datos."}, status=404)
-        else:
-             # Si el tipo de usuario no es 'organizador', devolver un error 403
-            return Response({"mensaje": "¡Error! Solo un organizador puede modificar los eventos."}, status=403)
+
 
 class eliminar_eventoAPIView(APIView):
     permission_classes = [esOrganizador]
@@ -435,8 +421,7 @@ class actualizar_reservaAPIView(APIView):
             type=openapi.TYPE_OBJECT,
             properties={
                 'evento': openapi.Schema(type=openapi.TYPE_STRING, description='Nombre del evento'),
-                'entradas_reservadas': openapi.Schema(type=openapi.TYPE_INTEGER,
-                                                      description='Número de entradas reservadas'),
+                'entradas_reservadas': openapi.Schema(type=openapi.TYPE_INTEGER,description='Número de entradas reservadas'),
                 'estado': openapi.Schema(type=openapi.TYPE_STRING, description="Estado de la reserva")
             },
             required=['evento', 'entradas_reservadas', 'estado']
@@ -498,9 +483,10 @@ class listar_comentariosAPIView(APIView):
     permission_classes =  [IsAuthenticated]
     @swagger_auto_schema(
         operation_description="Obtener lista de comentarios de un evento.",
-        responses={200: openapi.Response("Lista de comentarios."),
-                   404: openapi.Response("No hay comentarios asociados al evento especificado."),
-                   404: openapi.Response("¡Error! El id del evento deseada para su listado es incorrecto.")
+        responses={200: openapi.Response( description="Lista de comentarios."),
+                   404: openapi.Response(description="Posibles errores de no encontrado:"
+                    "- No hay comentarios asociados al evento especificado."
+                    "- ¡Error! El id del evento deseada para su listado es incorrecto.")
         },
     )
     def get(self, request, id):
