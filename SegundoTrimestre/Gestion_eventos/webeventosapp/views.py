@@ -205,8 +205,7 @@ class actualizar_eventoAPIView(APIView):
                 'descripcion': openapi.Schema(type=openapi.TYPE_STRING, description='Descripción del evento'),
                 'fecha': openapi.Schema(type=openapi.TYPE_STRING, format="date", description='Fecha del evento'),
                 'hora': openapi.Schema(type=openapi.TYPE_STRING, format="time", description='Hora del evento'),
-                'max_asistencias': openapi.Schema(type=openapi.TYPE_INTEGER,
-                                                  description='Capacidad máxima de asistentes'),
+                'max_asistencias': openapi.Schema(type=openapi.TYPE_INTEGER, description='Capacidad máxima de asistentes'),
                 'usuario': openapi.Schema(type=openapi.TYPE_STRING, description='Nombre del usuario.'),
                 'url_img': openapi.Schema(type=openapi.TYPE_STRING, description='Dirección de la imagen.')
             },
@@ -239,6 +238,7 @@ class actualizar_eventoAPIView(APIView):
         Respuesta:
         - Si el evento y el usuario asociado existen, se actualizan los detalles y se devuelve el evento actualizado.
         - Si el evento no existe, se devuelve un error con código de estado 404 (No encontrado).
+        - Si el usuario no existe, se devuelve un error con código de estado 404 (No encontrado).
         - Si el usuario no existe en el sistema, se devuelve un error con código de estado 404 (No encontrado).
         - Si el tipo de usuario no es 'organizador', no se actualiza el evento y se devuelve un error con código de estado 403 (Prohibido).
         """
@@ -247,26 +247,35 @@ class actualizar_eventoAPIView(APIView):
             # Cargar los datos del cuerpo de la solicitud
             campos_modif_evento = request.data
             try:
-                # Obtener el evento a actualizar mediante su ID
-                evento = Evento.objects.get(id=id)
-                # Actualizar los atributos del evento
-                evento.nombre = campos_modif_evento.get("nombre", evento.nombre)
-                evento.descripcion = campos_modif_evento.get("descripcion", evento.descripcion)
-                evento.fecha = campos_modif_evento.get("fecha", evento.fecha)
-                evento.hora = campos_modif_evento.get("hora", evento.hora)
-                evento.max_asistencias = campos_modif_evento.get("max_asistencias", evento.max_asistencias)
-                evento.url_img = campos_modif_evento.get("url_img", evento.url_img)
-                evento.usuario = request.user
+                nombre_usuario = campos_modif_evento["usuario"]
+                consulta_usuario = UsuarioPersonalizado.objects.get(username__iexact=nombre_usuario)
+                try:
+                    # Obtener el evento a actualizar mediante su ID
+                    evento = Evento.objects.get(id=id)
+                    # Actualizar los atributos del evento
+                    evento.nombre = campos_modif_evento.get("nombre", evento.nombre)
+                    evento.descripcion = campos_modif_evento.get("descripcion", evento.descripcion)
+                    evento.fecha = campos_modif_evento.get("fecha", evento.fecha)
+                    evento.hora = campos_modif_evento.get("hora", evento.hora)
+                    evento.max_asistencias = campos_modif_evento.get("max_asistencias", evento.max_asistencias)
+                    evento.url_img = campos_modif_evento.get("url_img", evento.url_img)
+                    evento.usuario = campos_modif_evento.get(consulta_usuario, evento.usuario)
 
-                # Guardar los cambios en el evento
-                evento.save()
+                    # Guardar los cambios en el evento
+                    evento.save()
 
-                # Responder con el evento actualizado
-                return Response({"id": evento.id, "nombre": evento.nombre, "mensaje": "Evento actualizado."},status=200)
-                # Si el usuario no existe, devolver un error 404
-            except Evento.DoesNotExist:
-                # Si el evento no existe, devolver un error 404
-                return Response({"mensaje": "No hay ningún evento identificado por el id deseado en nuestra base de datos."}, status=404)
+                    # Responder con el evento actualizado
+                    return Response({"id": evento.id, "nombre": evento.nombre, "mensaje": "Evento actualizado."},
+                                    status=200)
+                    # Si el usuario no existe, devolver un error 404
+                except Evento.DoesNotExist:
+                    # Si el evento no existe, devolver un error 404
+                    return Response(
+                        {"mensaje": "No hay ningún evento identificado por el id deseado en nuestra base de datos."},
+                        status=404)
+            except:
+                return Response({"mensaje":"El nombre del usuario no existe en nuestras bases de datos."}, status=404)
+
 
 
 class eliminar_eventoAPIView(APIView):
@@ -441,7 +450,8 @@ class actualizar_reservaAPIView(APIView):
             properties={
                 'evento': openapi.Schema(type=openapi.TYPE_STRING, description='Nombre del evento'),
                 'entradas_reservadas': openapi.Schema(type=openapi.TYPE_INTEGER,description='Número de entradas reservadas'),
-                'estado': openapi.Schema(type=openapi.TYPE_STRING, description="Estado de la reserva")
+                'estado': openapi.Schema(type=openapi.TYPE_STRING, description="Estado de la reserva"),
+                'usuario': openapi.Schema(type=openapi.TYPE_STRING, description="Nombre del usuario")
             },
         ),
         responses={200: openapi.Response(description="Se ha modificado la reserva correctamente."),
@@ -457,9 +467,10 @@ class actualizar_reservaAPIView(APIView):
             properties={
                 'evento': openapi.Schema(type=openapi.TYPE_STRING, description='Nombre del evento'),
                 'entradas_reservadas': openapi.Schema(type=openapi.TYPE_INTEGER,description='Número de entradas reservadas'),
-                'estado': openapi.Schema(type=openapi.TYPE_STRING, description="Estado de la reserva")
+                'estado': openapi.Schema(type=openapi.TYPE_STRING, description="Estado de la reserva"),
+                'usuario':openapi.Schema(type=openapi.TYPE_STRING, description="Nombre del usuario")
             },
-            required=['evento', 'entradas_reservadas', 'estado']
+            required=['evento', 'entradas_reservadas', 'estado', 'usuario']
         ),
         responses={200: openapi.Response(description="Se ha modificado la reserva correctamente."),
                    404: openapi.Response(description="¡Error! No se pudo efectuar la modificación debido a que el nombre del evento introducido no está registrado.")}
