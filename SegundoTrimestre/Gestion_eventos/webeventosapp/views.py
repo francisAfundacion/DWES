@@ -39,7 +39,8 @@ class listar_eventosAPIView(APIView):
                               type=openapi.TYPE_STRING),
             openapi.Parameter('pagina', openapi.IN_QUERY, description="Número de página",
                               type=openapi.TYPE_INTEGER),
-            openapi.Parameter('limite', openapi.IN_QUERY, description="Límite de registros de cada página.")
+            openapi.Parameter('limite', openapi.IN_QUERY, description="Límite de registros de cada página.",
+                              type=openapi.TYPE_INTEGER)
         ],
         responses={200: openapi.Response(description="Lista de eventos.")}
     )
@@ -123,8 +124,7 @@ class crear_eventoAPIView(APIView):
                 'descripcion': openapi.Schema(type=openapi.TYPE_STRING, description='Descripción del evento'),
                 'fecha': openapi.Schema(type=openapi.TYPE_STRING, format="date", description='Fecha del evento'),
                 'hora': openapi.Schema(type=openapi.TYPE_STRING, format="time", description='Hora del evento'),
-                'max_asistencias': openapi.Schema(type=openapi.TYPE_INTEGER,
-                                                  description='Capacidad máxima de asistentes'),
+                'max_asistencias': openapi.Schema(type=openapi.TYPE_INTEGER,description='Capacidad máxima de asistentes'),
                 'usuario': openapi.Schema(type=openapi.TYPE_STRING, description='Nombre del usuario.'),
                 'url_img': openapi.Schema(type=openapi.TYPE_STRING, description='Dirección de la imagen.')
             },
@@ -287,12 +287,11 @@ class eliminar_eventoAPIView(APIView):
                                         status=404)
 
 class listar_reservasAPIView(APIView):
-    class ProductoAPI(APIView):
-        @swagger_auto_schema(
+    permission_classes = [IsAuthenticated]
+    @swagger_auto_schema(
             operation_description="Obtener lista de reservas de un usuario autenticado.",
             responses={200: openapi.Response("Lista de productos"), }
         )
-    permission_classes = [IsAuthenticated]
     def get(self, request):
 
         """
@@ -316,7 +315,8 @@ class listar_reservasAPIView(APIView):
         - Si el usuario no existe, devuelve un error 404.
         """
         # Obtener todas las reservas del usuario
-        reservas_usuario = Reserva.objects.select_related('usuario').filter(usuario=objeto_usuario)
+        usuario = request.user.username
+        reservas_usuario = Reserva.objects.select_related('usuario').filter(usuario__username=usuario)
 
         # Construcción de la respuesta con los detalles de la reserva
         data_reservas = [
