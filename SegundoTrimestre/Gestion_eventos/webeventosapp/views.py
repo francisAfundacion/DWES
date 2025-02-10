@@ -287,6 +287,11 @@ class eliminar_eventoAPIView(APIView):
                                         status=404)
 
 class listar_reservasAPIView(APIView):
+    class ProductoAPI(APIView):
+        @swagger_auto_schema(
+            operation_description="Obtener lista de reservas de un usuario autenticado.",
+            responses={200: openapi.Response("Lista de productos"), }
+        )
     permission_classes = [IsAuthenticated]
     def get(self, request):
 
@@ -310,13 +315,6 @@ class listar_reservasAPIView(APIView):
         - Si el usuario no está autenticado, devuelve un error 403.
         - Si el usuario no existe, devuelve un error 404.
         """
-        nombre_usuario = request.user.username
-        try:
-            # Obtener el usuario por nombre (ignorando mayúsculas/minúsculas)
-            objeto_usuario = UsuarioPersonalizado.objects.get(username__iexact=nombre_usuario)
-        except ObjectDoesNotExist:
-            return JsonResponse({"mensaje": "El usuario no existe."}, status=404)
-
         # Obtener todas las reservas del usuario
         reservas_usuario = Reserva.objects.select_related('usuario').filter(usuario=objeto_usuario)
 
@@ -325,7 +323,7 @@ class listar_reservasAPIView(APIView):
             {
                 "id": sql_reserva.id,
                 "estado": sql_reserva.estado,
-                "usuario": nombre_usuario,
+                "usuario": request.user.username,
                 "evento": sql_reserva.evento.nombre,
                 "entradas_reservadas": sql_reserva.entradas_reservadas,
             }
