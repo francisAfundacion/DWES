@@ -335,7 +335,7 @@ class listar_reservasAPIView(APIView):
 class eliminar_reservasAPIView(APIView):
     permission_classes = [esParticipante]
     @swagger_auto_schema(
-        operation_description="Eliminar reservas acorde un id especificado en la url.",
+        operation_description="Eliminar reservas  para los usuarios participantes logueados, acorde a un id especificado en la url.",
         responses={200: openapi.Response("Reserva eliminada con éxito."),
                    404: openapi.Response("¡Error! No existe el id de la reserva que se desea eliminar.")
         }
@@ -379,6 +379,20 @@ class eliminar_reservasAPIView(APIView):
 
 class crear_reservaAPIView(APIView):
     permission_classes = [IsAuthenticated]
+    @swagger_auto_schema(
+        operation_description="Crea una nueva reserva.",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'evento': openapi.Schema(type=openapi.TYPE_STRING, description='Nombre del evento'),
+                'entradas_reservadas': openapi.Schema(type=openapi.TYPE_INTEGER, description='Número de entradas reservadas'),
+                'estado': openapi.Schema(type=openapi.TYPE_STRING, description="Estado de la reserva")
+            },
+            required=['evento', 'entradas_reservadas','estado']
+        ),
+        responses={201: openapi.Response(description="Se ha creado la reserva correctamente."),
+                   403: openapi.Response(description="El nombre del evento introducido no se asocia con ninguno que esté guardado en nuestra base de datos.")}
+    )
     def post (self, request):
 
         """
