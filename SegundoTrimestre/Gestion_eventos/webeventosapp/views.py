@@ -334,6 +334,12 @@ class listar_reservasAPIView(APIView):
 
 class eliminar_reservasAPIView(APIView):
     permission_classes = [esParticipante]
+    @swagger_auto_schema(
+        operation_description="Eliminar reservas acorde un id especificado en la url.",
+        responses={200: openapi.Response("Reserva eliminada con éxito."),
+                   404: openapi.Response("¡Error! No existe el id de la reserva que se desea eliminar.")
+        }
+    )
     def delete(self, request, id):
 
         """
@@ -366,7 +372,7 @@ class eliminar_reservasAPIView(APIView):
             #Eliminar la reserva
             reserva_eliminar.delete()
             # Responder con mensaje de éxito
-            return Response({"mensaje": "Producto eliminado con éxito.", "info_reserva": info_reserva})
+            return Response({"mensaje": "Reserva eliminada con éxito.", "info_reserva": info_reserva},status=200)
         except Reserva.DoesNotExist:
             # Si la reserva no existe, devolver un error con código 404
             return Response({"mensaje": "¡Error! No existe el id de la reserva que se desea eliminar."},status=404)
