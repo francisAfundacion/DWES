@@ -659,11 +659,12 @@ class registerAPIView(APIView):
             required=['username', 'password', 'email', 'tipo_usuario']
         ),
         responses={201: openapi.Response(description="El usuario ha sido dado de alta con éxito."),
-                   400: openapi.Response(description="Se han dejado campo/s obligatorio/s sin rellenar. Recuerda que el único campo opcional es la biografía."),
-                   400: openapi.Response(description="El tipo de usuario es incorrecto, debería ser organizador o participante."),
-                   400: openapi.Response(description="El email introducido ya está en uso."),
-                   400: openapi.Response(description="El nombre de usuario introducido ya está en uso."),
-                   400: openapi.Response(description="La contraseña introducida ya está en uso.")
+                    400: openapi.Response(description="Posibles errores al intentar registrarse un usuario:"
+                    "- Se han dejado campo/s obligatorio/s sin rellenar. Recuerda que el único campo opcional es la biografía."
+                    "- El tipo de usuario es incorrecto, debería ser organizador o participante."
+                    "- El email introducido ya está en uso."
+                    "- El nombre de usuario introducido ya está en uso."
+                    "- La contraseña introducida ya está en uso."),
         }
     )
     def post(self, request):
