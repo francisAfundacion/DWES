@@ -246,31 +246,28 @@ class actualizar_eventoAPIView(APIView):
         if request.method in ["PUT", "PATCH"]:
             # Cargar los datos del cuerpo de la solicitud
             campos_modif_evento = request.data
+            consulta_usuario = UsuarioPersonalizado.objects.get(username__iexact=nombre_usuario)
             try:
-                nombre_usuario = campos_modif_evento["usuario"]
-                consulta_usuario = UsuarioPersonalizado.objects.get(username__iexact=nombre_usuario)
-                try:
-                    # Obtener el evento a actualizar mediante su ID
-                    evento = Evento.objects.get(id=id)
-                    # Actualizar los atributos del evento
-                    evento.nombre = campos_modif_evento.get("nombre", evento.nombre)
-                    evento.descripcion = campos_modif_evento.get("descripcion", evento.descripcion)
-                    evento.fecha = campos_modif_evento.get("fecha", evento.fecha)
-                    evento.hora = campos_modif_evento.get("hora", evento.hora)
-                    evento.max_asistencias = campos_modif_evento.get("max_asistencias", evento.max_asistencias)
-                    evento.url_img = campos_modif_evento.get("url_img", evento.url_img)
-                    evento.usuario = campos_modif_evento.get(consulta_usuario, evento.usuario)
+                 # Obtener el evento a actualizar mediante su ID
+                evento = Evento.objects.get(id=id)
+                # Actualizar los atributos del evento
+                evento.nombre = campos_modif_evento.get("nombre", evento.nombre)
+                evento.descripcion = campos_modif_evento.get("descripcion", evento.descripcion)
+                evento.fecha = campos_modif_evento.get("fecha", evento.fecha)
+                evento.hora = campos_modif_evento.get("hora", evento.hora)
+                evento.max_asistencias = campos_modif_evento.get("max_asistencias", evento.max_asistencias)
+                evento.url_img = campos_modif_evento.get("url_img", evento.url_img)
+                evento.usuario = campos_modif_evento.get(consulta_usuario, evento.usuario)
 
-                    # Guardar los cambios en el evento
-                    evento.save()
+                # Guardar los cambios en el evento
+                evento.save()
 
-                    # Responder con el evento actualizado
-                    return Response({"id": evento.id, "nombre": evento.nombre, "mensaje": "Evento actualizado."},
-                                    status=200)
-                    # Si el usuario no existe, devolver un error 404
-                except Evento.DoesNotExist:
-                    # Si el evento no existe, devolver un error 404
-                    return Response(
+                # Responder con el evento actualizado
+                return Response({"id": evento.id, "nombre": evento.nombre, "mensaje": "Evento actualizado."},status=200)
+            # Si el usuario no existe, devolver un error 404
+            except Evento.DoesNotExist:
+            # Si el evento no existe, devolver un error 404
+                return Response(
                         {"mensaje": "No hay ningún evento identificado por el id deseado en nuestra base de datos."},
                         status=404)
             except:
