@@ -20,9 +20,28 @@ from webeventosapp.views import crear_eventoAPIView
 from webeventosapp.views import actualizar_eventoAPIView
 from webeventosapp.views import eliminar_eventoAPIView
 from webeventosapp.views import listar_reservasAPIView
+from webeventosapp.views import eliminar_reservasAPIView
+from webeventosapp.views import crear_reservaAPIView
+from webeventosapp.views import actualizar_reservaAPIView
+from webeventosapp.views import listar_comentariosAPIView
+from webeventosapp.views import crear_comentarioAPIView
+from webeventosapp.views import registerAPIView
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+from rest_framework.permissions import AllowAny
+
 from django.contrib import admin
 from django.urls import path
 
+schema_view = get_schema_view(
+    openapi.Info(
+        title="API Documentación",
+        default_version="v1",
+        description="Documentación de la API",
+    ),
+    public=True,
+    permission_classes=[AllowAny],
+)
 
 urlpatterns = [
     path('login', ObtainAuthToken.as_view(), name='api_token_auth'),
@@ -32,12 +51,12 @@ urlpatterns = [
     path('actualizar_evento/<int:id>',actualizar_eventoAPIView.as_view()),
     path('eliminar_evento/<int:id>', eliminar_eventoAPIView.as_view()),
     path('listar_reservas', listar_reservasAPIView.as_view()),
-    #path('crear_reserva', views.crear_reserva),
-    #path('actualizar_reserva/<int:id>', views.actualizar_reserva),
-    #path('eliminar_reserva/<int:id>', views.eliminar_reserva),
-    #path('listar_comentario/evento/<int:id>', views.listar_comentarios),
-    #path('crear_comentario', views.crear_comentario),
-    #path('login', views.login),
-    #path('register', views.register),
-    #path('api-token-auth/', ObtainAuthToken.as_view(), name='api_token_auth'),
+    path('crear_reserva', crear_reservaAPIView.as_view()),
+    path('actualizar_reserva/<int:id>', actualizar_reservaAPIView.as_view()),
+    path('eliminar_reserva/<int:id>', eliminar_reservasAPIView.as_view() ),
+    path('listar_comentario/evento/<int:id>', listar_comentariosAPIView.as_view()),
+    path('crear_comentario', crear_comentarioAPIView.as_view()),
+    path('register', registerAPIView.as_view()),
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
