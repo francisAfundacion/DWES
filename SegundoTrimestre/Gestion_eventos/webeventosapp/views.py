@@ -17,7 +17,6 @@ from rest_framework import serializers
 
 class  esOrganizador(BasePermission):
     def has_permission(self, request, view):
-        print(f"estoy aqyu",request.user)
         return request.user and request.user.tipo == "organizador"
 
 class  esParticipante(BasePermission):
@@ -191,9 +190,7 @@ class actualizar_eventoAPIView(APIView):
             },
         ),
         responses={200: openapi.Response(description="Evento actualizado."),
-                   404: openapi.Response(
-                       description="No hay ningún evento identificado por el id deseado en nuestra base de datos.")
-                   }
+                   404: openapi.Response(description="No hay ningún evento identificado por el id deseado en nuestra base de datos.")}
     )
 
     def put (self, request, id):
@@ -297,9 +294,11 @@ class listar_reservasAPIView(APIView):
           - Nombre del usuario.
           - Nombre del evento asociado.
           - Número de entradas reservadas.
+
         - Si el usuario no está autenticado, devuelve un error 403.
         - Si el usuario no existe, devuelve un error 404.
         """
+
         # Obtener todas las reservas del usuario
         usuario = request.user.username
         reservas_usuario = Reserva.objects.select_related('usuario').filter(usuario__username=usuario)
@@ -484,8 +483,8 @@ class listar_comentariosAPIView(APIView):
     @swagger_auto_schema(
         operation_description="Obtener lista de comentarios de un evento.",
         responses={200: openapi.Response( description="Lista de comentarios."),
-                   404: openapi.Response(description="Posibles errores de no encontrado:"
-                    "- No hay comentarios asociados al evento especificado."
+                   404: openapi.Response(description="Posibles errores de no encontrado:\n"
+                    "- No hay comentarios asociados al evento especificado.\n"
                     "- ¡Error! El id del evento deseada para su listado es incorrecto.")
         },
     )
@@ -645,11 +644,11 @@ class registerAPIView(APIView):
             required=['username', 'password', 'email', 'tipo_usuario']
         ),
         responses={201: openapi.Response(description="El usuario ha sido dado de alta con éxito."),
-                    400: openapi.Response(description="Posibles errores al intentar registrarse un usuario:"
-                    "- Se han dejado campo/s obligatorio/s sin rellenar. Recuerda que el único campo opcional es la biografía."
-                    "- El tipo de usuario es incorrecto, debería ser organizador o participante."
-                    "- El email introducido ya está en uso."
-                    "- El nombre de usuario introducido ya está en uso."
+                    400: openapi.Response(description="Posibles errores al intentar registrarse un usuario:\n"
+                    "- Se han dejado campo/s obligatorio/s sin rellenar. Recuerda que el único campo opcional es la biografía.\n"
+                    "- El tipo de usuario es incorrecto, debería ser organizador o participante.\n"
+                    "- El email introducido ya está en uso.\n"
+                    "- El nombre de usuario introducido ya está en uso.\n"
                     "- La contraseña introducida ya está en uso."),
         }
     )
