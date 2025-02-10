@@ -428,6 +428,22 @@ class crear_reservaAPIView(APIView):
 
 class actualizar_reservaAPIView(APIView):
     permission_classes = [esOrganizador]
+
+    @swagger_auto_schema(
+        operation_description="Modifica los organizadores los campos totalmente o parcialmente  de la reserva.",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'evento': openapi.Schema(type=openapi.TYPE_STRING, description='Nombre del evento'),
+                'entradas_reservadas': openapi.Schema(type=openapi.TYPE_INTEGER,
+                                                      description='Número de entradas reservadas'),
+                'estado': openapi.Schema(type=openapi.TYPE_STRING, description="Estado de la reserva")
+            },
+            required=['evento', 'entradas_reservadas', 'estado']
+        ),
+        responses={200: openapi.Response(description="Se ha modificado la reserva correctamente."),
+                   404: openapi.Response(description="¡Error! No se pudo efectuar la modificación debido a que el nombre del evento introducido no está registrado.")}
+    )
     def patch(self,request,id):
         return self.actualizar_reserva(request, id)
 
