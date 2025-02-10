@@ -30,6 +30,20 @@ class  esParticipante(BasePermission):
 class listar_eventosAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        operation_description="Lista eventos que presenta filtros opcionales por nombre del evento o fecha, ordenación acorde a  los campos nombrados y número de página y límite de registros en cada una de estas..",
+        manual_parameters=[
+            openapi.Parameter('nombre', openapi.IN_QUERY, description="Filtrar por nombre del evento",
+                              type=openapi.TYPE_STRING),
+            openapi.Parameter('fecha', openapi.IN_QUERY, description="Filtrar por fecha (YYYY-MM-DD)",
+                              type=openapi.TYPE_STRING),
+            openapi.Parameter('pagina', openapi.IN_QUERY, description="Número de página",
+                              type=openapi.TYPE_INTEGER),
+            openapi.Parameter('limite', openapi.IN_QUERY, description="Límite de registros de cada página.")
+        ],
+        responses={200: openapi.Response(description="Lista de eventos.")}
+    )
+
     def get(self, request):
 
         """
