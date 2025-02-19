@@ -747,5 +747,18 @@ class registerAPIView(APIView):
 def pagina_login(request):
     return render(request, 'Login.html')
 
+def detalle_evento(request, id):
+    evento = Evento.objects.get(id=id)
+    print(evento)
+    evento_detalles ={"nombre": evento.nombre,
+         "descripcion": evento.descripcion,
+         "fecha": evento.fecha,
+         "hora": evento.fecha,
+         "max_asistencias": evento.max_asistencias,
+         "usuario":evento.usuario.username,
+         "url_img":evento.url_img,
+    }
+    print(evento_detalles)
+    return render (request,'EventoDetalle.html', {'evento':evento_detalles})
 
 

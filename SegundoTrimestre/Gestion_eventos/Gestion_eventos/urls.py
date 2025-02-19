@@ -27,6 +27,7 @@ from webeventosapp.views import listar_comentariosAPIView
 from webeventosapp.views import crear_comentarioAPIView
 from webeventosapp.views import registerAPIView
 from webeventosapp.views import pagina_login
+from webeventosapp.views import detalle_evento
 
 
 
@@ -49,6 +50,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    path('evento/<int:id>/detalle', detalle_evento),
     path('', pagina_login),
     path('login', ObtainAuthToken.as_view(), name='api_token_auth'),
     path('listar_eventos',listar_eventosAPIView.as_view()),

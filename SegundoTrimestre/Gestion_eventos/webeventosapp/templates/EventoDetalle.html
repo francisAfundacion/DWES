@@ -1,0 +1,26 @@
+<!-- templates/inicio.html -->
+{% extends 'Base.html' %}
+
+{% block title %} Detalles del evento data.evento_detalles.nombre: {% endblock %}
+<ul>
+  {% block content %}
+    <li>{{ evento.nombre }}</li>
+    <li>{{evento.descripcion }}</li>
+    <li>{{ evento.fecha }}</li>
+    <li>{{ evento.hora }}</li>
+    <li>{{ evento.max_asistencias }}</li>
+    <li>{{ evento.usuario.username }}</li>
+    <li> <img src="{{ evento.url_img }}"> </li>
+</ul>
+<ul>
+    <form id="post-form">
+        <input type="text" name="estado" placeholder="Introduzca el estado de la reserva.">
+        <input type="text" name="evento" placeholder="Introduzca el nombre del evento.">
+        <input  type="number" name="max_asistencias" placeholder="Introduzca cantidad de entradas a reservar.">
+        <input type="submit" value="Enviar">
+    </form>
+    {% endblock %}
+    <script src="CrearReserva.js">
+    </script>
+</ul>
+<!--<script src="lista_eventos.js"></script>-->
