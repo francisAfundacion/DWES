@@ -1,0 +1,12 @@
+<!-- templates/inicio.html -->
+{% extends 'Base.html' %}
+
+{% block title %}Lista de eventos: {% endblock %}
+<ul>
+    {% block content %}
+        {% for evento in data.results %}
+            <li>{{ evento.nombre }}</li>
+        {% endfor %}
+    {% endblock %}
+</ul>
+<!--<script src="lista_eventos.js"></script>-->

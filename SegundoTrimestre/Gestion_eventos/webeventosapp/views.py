@@ -13,7 +13,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework import serializers
-
+from django.shortcuts import render
 
 class  esOrganizador(BasePermission):
     def has_permission(self, request, view):
@@ -23,11 +23,8 @@ class  esParticipante(BasePermission):
     def has_permission(self, request, view):
         return request.user and request.user.tipo == "participante"
 
-#class SerializadorEvento(serializer.Serializer):
-
-
 class listar_eventosAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+   # permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
         operation_description="Lista eventos que presenta filtros opcionales por nombre del evento o fecha, ordenación acorde a  los campos nombrados y número de página y límite de registros en cada una de estas..",
@@ -105,7 +102,7 @@ class listar_eventosAPIView(APIView):
             "previous": query_param_n_pagina - 1 if eventos_pagina.has_previous() else None,  # Página anterior si existe
             "results": lista_json_eventos  # Lista de eventos de la página actual
         }
-        return Response(data)
+        return render (request, 'Lista_eventos.html', {"data":data})
 
 class crear_eventoAPIView(APIView):
     permission_classes = [esOrganizador]
@@ -559,12 +556,12 @@ class listar_comentariosAPIView(APIView):
                             for sql_comentario in consulta_comentarios]
         # Si no hay comentarios para el evento
             if len(lista_comentarios) == 0:
-                return Response({"mensaje": "No hay comentarios asociados al evento especificado."}, status = 404)
+                return render({"mensaje": "No hay comentarios asociados al evento especificado."}, status = 404, )
             else:
-                return Response(lista_comentarios)
+                return render(lista_comentarios)
         # Si el evento no existe
         except Evento.DoesNotExist:
-            return Response({"mensaje": "¡Error! El id del evento deseada para su listado es incorrecto."}, status = 404)
+            return render({"mensaje": "¡Error! El id del evento deseada para su listado es incorrecto."}, status = 404)
 
 
 class crear_comentarioAPIView(APIView):
@@ -746,3 +743,9 @@ class registerAPIView(APIView):
             biografia = biografia_usuario
         )
         return Response({"usuario": nuevo_usuario.username, "email": nuevo_usuario.password, "mensaje": "El usuario ha sido dado de alta con éxito."}, status = 201)
+
+def pagina_login(request):
+    return render(request, 'Login.html')
+
+
+

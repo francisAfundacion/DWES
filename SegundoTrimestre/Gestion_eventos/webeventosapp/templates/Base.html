@@ -1,0 +1,19 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Mi sitio{% endblock %}</title>
+</head>
+<body>
+    <header>
+        <h1>Mi sitio web</h1>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2025 App Gestión Eventos</p>
+    </footer>
+
+</body>
+</html>

@@ -26,12 +26,17 @@ from webeventosapp.views import actualizar_reservaAPIView
 from webeventosapp.views import listar_comentariosAPIView
 from webeventosapp.views import crear_comentarioAPIView
 from webeventosapp.views import registerAPIView
+from webeventosapp.views import pagina_login
+
+
+
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework.permissions import AllowAny
-
 from django.contrib import admin
 from django.urls import path
+
+
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -44,8 +49,9 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    path('', pagina_login),
     path('login', ObtainAuthToken.as_view(), name='api_token_auth'),
-    path('listar_eventos/',listar_eventosAPIView.as_view()),
+    path('listar_eventos',listar_eventosAPIView.as_view()),
     path('crear_evento', crear_eventoAPIView.as_view()),
     path('admin/', admin.site.urls),
     path('actualizar_evento/<int:id>',actualizar_eventoAPIView.as_view()),
