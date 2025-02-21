@@ -1,0 +1,33 @@
+<!-- templates/inicio.html -->
+{% extends 'Base.html' %}
+{% block style %}
+
+{% endblock %}
+
+{% block title %} Reservas del usuario {{ data_reservas.usuario }} {% endblock %}
+
+{% block content %}
+        <ul>
+            <li>{{ data_reservas.id }}</li>
+            <li>{{ data_reservas.evento }}</li>
+            <li>{{ data_reservas.estado }}</li>
+            <li>{{ data_reservas.evento.entradas_reservadas }}</li> <!-- Accediendo a "evento" dentro de "data_reservas" -->
+        </ul>
+{% endblock %}
+{% block script %}
+    <script>
+       if (localStorage.getItem('token') === null) {
+            window.location.href = "http://127.0.0.1:8000/";
+        } else {
+            // Hacer la solicitud GET a la API con el token de autorización
+            fetch('http://127.0.0.1:8000/listar_reservas', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Token ' + localStorage.getItem('token'),
+                    'Content-Type': 'application/json'
+                }
+            })
+        }
+    </script>
+{% endblock %}
+

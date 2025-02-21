@@ -2,12 +2,84 @@
 <html>
     <head>
         <title>Login</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f7f7f7;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+            }
+
+            h1 {
+                font-size: 2.5em;
+                color: #333;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+
+            #login-form {
+                background-color: #fff;
+                padding: 40px;
+                border-radius: 8px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+                width: 100%;
+                max-width: 400px;
+            }
+
+            input[type="text"], input[type="password"] {
+                width: 100%;
+                padding: 10px;
+                margin: 10px 0;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-size: 1em;
+            }
+
+            input[type="submit"] {
+                width: 100%;
+                padding: 12px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                font-size: 1.2em;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+
+            input[type="submit"]:hover {
+                background-color: #45a049;
+            }
+
+            input[type="text"]:focus, input[type="password"]:focus {
+                border-color: #4CAF50;
+                outline: none;
+            }
+
+            .form-footer {
+                text-align: center;
+                margin-top: 20px;
+                font-size: 0.9em;
+            }
+
+            .form-footer a {
+                text-decoration: none;
+                color: #4CAF50;
+            }
+
+            .form-footer a:hover {
+                text-decoration: underline;
+            }
+        </style>
     </head>
     <body>
         <h1>Iniciar sesión</h1>
         <form id="login-form">
-            <input type="text" name="username" placeholder="Introduzca el nombre de usuario">
-            <input  type="password" name="password" placeholder="Introduzca la contraseña del usuario">
+            <input type="text" name="username" placeholder="Introduzca el nombre de usuario" required>
+            <input type="password" name="password" placeholder="Introduzca la contraseña del usuario" required>
             <input type="submit" value="Enviar">
         </form>
         <script>
@@ -15,6 +87,7 @@
                 event.preventDefault();
                 const formData = new FormData(this);
                 console.log(formData);
+
                 const response = await fetch('http://127.0.0.1:8000/login', {
                     method: 'POST',
                     body: JSON.stringify({
@@ -26,8 +99,14 @@
                     }
                 });
                 const data = await response.json();
-                localStorage.setItem('token', data.token);
-                window.location.href = "http://127.0.0.1:8000/listar_eventos";
+
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);  // Guarda el token
+                    console.log("Login exitoso");
+                    window.location.href = "http://127.0.0.1:8000/listar_eventos";  // Redirige
+                } else {
+                    console.error('Error al iniciar sesión');
+                }
             });
         </script>
     </body>

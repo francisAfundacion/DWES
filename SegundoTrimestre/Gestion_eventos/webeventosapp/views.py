@@ -333,8 +333,7 @@ class listar_reservasAPIView(APIView):
             }
             for sql_reserva in reservas_usuario
         ]
-
-        return Response(data_reservas)
+        return render(request,'Panel_usuario.html', {"data":data_reservas})
 
 class eliminar_reservasAPIView(APIView):
     permission_classes = [esParticipante]
