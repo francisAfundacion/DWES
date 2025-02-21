@@ -16,6 +16,7 @@
 {% endblock %}
 {% block script %}
     <script>
+       //Dirigir a la pantalla de login, en caso de no haberse logueado y por tanto no haber generado el token.
        if (localStorage.getItem('token') === null) {
             window.location.href = "http://127.0.0.1:8000/";
         } else {

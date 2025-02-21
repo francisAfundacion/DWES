@@ -83,28 +83,40 @@
             <input type="submit" value="Enviar">
         </form>
         <script>
+            // Agrega un 'event listener' al formulario de login, que escucha el evento 'submit' (cuando se envía el formulario).
             document.getElementById('login-form').addEventListener('submit', async function(event) {
+                // Previene la acción por defecto del formulario (que sería recargar la página al enviarlo).
                 event.preventDefault();
-                const formData = new FormData(this);
-                console.log(formData);
 
+                // Crea un objeto FormData con los datos del formulario para facilitar su manejo.
+                const formData = new FormData(this);
+                console.log(formData); // Muestra los datos del formulario en la consola para depuración.
+
+                // Realiza una solicitud HTTP asincrónica usando fetch. Se utiliza para enviar los datos de login al servidor.
                 const response = await fetch('http://127.0.0.1:8000/login', {
-                    method: 'POST',
+                    method: 'POST',  // El método HTTP es POST, ya que estamos enviando datos al servidor.
                     body: JSON.stringify({
+                        // Se obtiene el valor de los campos del formulario 'username' y 'password' para enviarlos al servidor.
                         username: formData.get('username'),
                         password: formData.get('password')
                     }),
                     headers: {
+                        // Establece el tipo de contenido como JSON, ya que estamos enviando datos en formato JSON.
                         'Content-Type': 'application/json'
                     }
                 });
+
+                // Espera la respuesta del servidor y la convierte en formato JSON.
                 const data = await response.json();
 
+                // Si la respuesta del servidor es correcta (código de estado 2xx), guarda el token en el almacenamiento local del navegador.
                 if (response.ok) {
-                    localStorage.setItem('token', data.token);  // Guarda el token
-                    console.log("Login exitoso");
-                    window.location.href = "http://127.0.0.1:8000/listar_eventos";  // Redirige
+                    localStorage.setItem('token', data.token);  // Guarda el token de autenticación.
+                    console.log("Login exitoso");  // Muestra un mensaje en la consola.
+                    // Redirige al usuario a la página de eventos listados después de un login exitoso.
+                    window.location.href = "http://127.0.0.1:8000/listar_eventos";
                 } else {
+                    // Si la respuesta no es exitosa, muestra un error en la consola.
                     console.error('Error al iniciar sesión');
                 }
             });
